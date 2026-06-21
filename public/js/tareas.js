@@ -197,7 +197,7 @@ function renderEmpleados() {
         <div class="empleado-avatar">${e.nombre[0].toUpperCase()}</div>
         <div style="flex:1">
           <h3>${e.nombre}${cuentaBadge}</h3>
-          <p>${e.rol} · ${e.tel||'sin teléfono'}${e.email?` · ${e.email}`:''}</p>
+          <p>${e.rol}${e.tel ? ' · ' + e.tel : ''}</p>
         </div>
         <button class="btn-edit-mini" onclick="editarEmpleado(${i})" title="Editar" style="color:#fff;">✏️</button>
       </div>
@@ -225,7 +225,7 @@ function editarEmpleado(i) {
   document.getElementById('emp-nombre').value = e.nombre;
   document.getElementById('emp-rol').value = e.rol;
   document.getElementById('emp-tel').value = e.tel || '';
-  document.getElementById('emp-email').value = e.email || '';
+  document.getElementById('emp-email').value = '';
   document.getElementById('emp-pass').value = '';
   document.getElementById('btn-add-emp').textContent = '✏️ Guardar cambios';
   document.getElementById('emp-nombre').focus();

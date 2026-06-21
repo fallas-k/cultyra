@@ -975,28 +975,142 @@
       <div class="section-title">
         <div class="section-tag">Mi Equipo</div>
         <h2>Gestión de empleados</h2>
-        <p>Registra a tus trabajadores y asígnales tareas de campo.</p>
+        <p>Registra a tus trabajadores, asígnales tareas y lleva el control de tu equipo.</p>
       </div>
-      <div class="empleado-form">
-        <div><label>Nombre completo</label><input type="text" id="emp-nombre" placeholder="Ej. Juan Pérez"></div>
-        <div><label>Rol / Puesto</label>
-          <select id="emp-rol">
-            <option>Peón agrícola</option>
-            <option>Capataz</option>
-            <option>Operador de maquinaria</option>
-            <option>Riego y fumigación</option>
-            <option>Cosecha</option>
-            <option>Otro</option>
-          </select>
+
+      <!-- KPIs del equipo -->
+      <div class="emp-kpis" id="emp-kpis">
+        <div class="emp-kpi"><span id="kpi-total-emp">0</span><small>Total</small></div>
+        <div class="emp-kpi"><span id="kpi-activos-emp">0</span><small>Activos hoy</small></div>
+        <div class="emp-kpi"><span id="kpi-tareas-pend">0</span><small>Tareas pendientes</small></div>
+        <div class="emp-kpi"><span id="kpi-tareas-done">0</span><small>Completadas</small></div>
+      </div>
+
+      <!-- Buscador y filtros -->
+      <div class="emp-toolbar">
+        <div class="emp-search-wrap">
+          <span class="emp-search-icon">🔍</span>
+          <input type="text" id="emp-buscar" placeholder="Buscar empleado..." oninput="filtrarEmpleados(this.value)">
         </div>
-        <div><label>Teléfono</label><input type="tel" id="emp-tel" placeholder="+506 0000-0000"></div>
-        <div><label>Correo del empleado</label><input type="email" id="emp-email" placeholder="empleado@correo.com"></div>
-        <div><label>Contraseña temporal</label><input type="text" id="emp-pass" placeholder="Mínimo 6 caracteres" autocomplete="off"></div>
-        <button id="btn-add-emp" onclick="addEmpleado()">+ Agregar y crear cuenta</button>
+        <select id="emp-filtro-rol" onchange="filtrarEmpleados(document.getElementById('emp-buscar').value)" class="emp-filtro-sel">
+          <option value="">Todos los roles</option>
+          <option>Peón agrícola</option>
+          <option>Capataz</option>
+          <option>Operador de maquinaria</option>
+          <option>Riego y fumigación</option>
+          <option>Cosecha</option>
+          <option>Otro</option>
+        </select>
+        <button class="emp-btn-nuevo" onclick="abrirModalEmpleado()">+ Nuevo empleado</button>
       </div>
+
       <div class="empleados-grid" id="empleados-grid"></div>
     </div>
   </section>
+
+  <!-- MODAL AGREGAR / EDITAR EMPLEADO -->
+  <div class="modal-overlay" id="emp-modal">
+    <div class="modal emp-modal-inner">
+      <div class="emp-modal-header">
+        <h3 id="emp-modal-titulo">👷 Nuevo empleado</h3>
+        <button onclick="cerrarModalEmpleado()" class="modal-close-btn">✕</button>
+      </div>
+
+      <!-- Tabs del modal -->
+      <div class="emp-tabs">
+        <button class="emp-tab active" onclick="switchEmpTab('datos', this)">📋 Datos</button>
+        <button class="emp-tab" onclick="switchEmpTab('acceso', this)">🔐 Acceso web</button>
+      </div>
+
+      <!-- Tab: Datos personales -->
+      <div id="emp-tab-datos" class="emp-tab-panel active">
+        <div class="emp-form-grid">
+          <div class="emp-form-group">
+            <label>Nombre completo *</label>
+            <input type="text" id="emp-nombre" placeholder="Ej. Juan Pérez Rodríguez">
+          </div>
+          <div class="emp-form-group">
+            <label>Rol / Puesto *</label>
+            <select id="emp-rol">
+              <option>Peón agrícola</option>
+              <option>Capataz</option>
+              <option>Operador de maquinaria</option>
+              <option>Riego y fumigación</option>
+              <option>Cosecha</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="emp-form-group">
+            <label>Teléfono</label>
+            <input type="tel" id="emp-tel" placeholder="+506 0000-0000">
+          </div>
+          <div class="emp-form-group">
+            <label>Cédula / ID</label>
+            <input type="text" id="emp-cedula" placeholder="Ej. 1-2345-6789">
+          </div>
+          <div class="emp-form-group">
+            <label>Fecha de ingreso</label>
+            <input type="date" id="emp-fecha-ingreso">
+          </div>
+          <div class="emp-form-group">
+            <label>Jornada laboral</label>
+            <select id="emp-jornada">
+              <option value="completa">Tiempo completo</option>
+              <option value="parcial">Tiempo parcial</option>
+              <option value="temporal">Temporal / zafra</option>
+              <option value="contrato">Por contrato</option>
+            </select>
+          </div>
+          <div class="emp-form-group">
+            <label>Salario (₡ / mes)</label>
+            <input type="number" id="emp-salario" placeholder="Ej. 380000" min="0">
+          </div>
+          <div class="emp-form-group">
+            <label>Notas internas</label>
+            <input type="text" id="emp-notas" placeholder="Observaciones opcionales...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Acceso web -->
+      <div id="emp-tab-acceso" class="emp-tab-panel">
+        <div class="emp-acceso-info">
+          <div class="emp-acceso-icon">🌐</div>
+          <p>Crea una cuenta para que el empleado acceda a <b>cultyraagr.web.app</b> y vea sus tareas, el clima y el asistente IA.</p>
+          <p style="font-size:12px;color:var(--text-light);margin-top:6px;">Opcional — el empleado puede existir sin cuenta web.</p>
+        </div>
+        <div class="emp-form-grid">
+          <div class="emp-form-group full-width">
+            <label>Correo del empleado</label>
+            <input type="email" id="emp-email" placeholder="empleado@correo.com">
+          </div>
+          <div class="emp-form-group full-width">
+            <label>Contraseña temporal</label>
+            <div style="position:relative">
+              <input type="text" id="emp-pass" placeholder="Mínimo 6 caracteres" autocomplete="off">
+              <button type="button" onclick="generarPassEmp()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer;">🎲 Generar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="emp-modal-footer">
+        <button class="btn-cancel" onclick="cerrarModalEmpleado()">Cancelar</button>
+        <button class="btn-primary" id="btn-add-emp" onclick="addEmpleado()">+ Registrar empleado</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL EMPLEADO -->
+  <div class="modal-overlay" id="emp-perfil-modal">
+    <div class="modal emp-modal-inner" style="max-width:480px">
+      <div class="emp-modal-header">
+        <h3 id="emp-perfil-titulo">👷 Perfil del empleado</h3>
+        <button onclick="document.getElementById('emp-perfil-modal').classList.remove('open')" class="modal-close-btn">✕</button>
+      </div>
+      <div id="emp-perfil-body"></div>
+    </div>
+  </div>
 
 
   <div id="reporte"></div>

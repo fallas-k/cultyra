@@ -182,149 +182,309 @@ function revisarRecordatorios() {
 // ===== EMPLEADOS =====
 let empleados = [];
 let tareasEmpleado = [];
+let editandoEmp = null;
+let empFiltroTexto = '';
 
+// ─── Colores de avatar por inicial ───────────────────────────────────────────
+const EMP_COLORS = ['#166534','#0e4f8a','#7e3af2','#c05621','#065f46','#831843','#1e40af','#92400e'];
+function empColor(nombre) {
+  const c = (nombre.charCodeAt(0) || 0) % EMP_COLORS.length;
+  return EMP_COLORS[c];
+}
+
+// ─── Abrir / cerrar modal ─────────────────────────────────────────────────────
+function abrirModalEmpleado(idx) {
+  editandoEmp = (idx !== undefined) ? idx : null;
+  const modal = document.getElementById('emp-modal');
+  const titulo = document.getElementById('emp-modal-titulo');
+  const btn    = document.getElementById('btn-add-emp');
+  // Limpiar campos
+  ['emp-nombre','emp-tel','emp-cedula','emp-email','emp-pass','emp-salario','emp-notas'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('emp-fecha-ingreso').value = new Date().toISOString().split('T')[0];
+  // Si edita, prellenar
+  if (editandoEmp !== null) {
+    const e = empleados[editandoEmp];
+    titulo.textContent = '✏️ Editar empleado';
+    btn.textContent = '✏️ Guardar cambios';
+    document.getElementById('emp-nombre').value         = e.nombre  || '';
+    document.getElementById('emp-rol').value            = e.rol     || 'Peón agrícola';
+    document.getElementById('emp-tel').value            = e.tel     || '';
+    document.getElementById('emp-cedula').value         = e.cedula  || '';
+    document.getElementById('emp-salario').value        = e.salario || '';
+    document.getElementById('emp-notas').value          = e.notas   || '';
+    document.getElementById('emp-jornada').value        = e.jornada || 'completa';
+    document.getElementById('emp-fecha-ingreso').value  = e.fechaIngreso || new Date().toISOString().split('T')[0];
+    document.getElementById('emp-email').value          = e.email   || '';
+  } else {
+    titulo.textContent = '👷 Nuevo empleado';
+    btn.textContent    = '+ Registrar empleado';
+  }
+  // Activar tab datos por defecto
+  switchEmpTab('datos', document.querySelector('.emp-tab'));
+  modal.classList.add('open');
+}
+function cerrarModalEmpleado() {
+  document.getElementById('emp-modal').classList.remove('open');
+  editandoEmp = null;
+}
+function switchEmpTab(tab, btn) {
+  document.querySelectorAll('.emp-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.emp-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('emp-tab-' + tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function generarPassEmp() {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const pass = Array.from({length:8}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  document.getElementById('emp-pass').value = pass;
+}
+
+// ─── Renderizar KPIs del equipo ───────────────────────────────────────────────
+function renderEmpKpis() {
+  const total    = empleados.length;
+  const pendTot  = tareasEmpleado.filter(t => !t.done).length;
+  const doneTot  = tareasEmpleado.filter(t => t.done).length;
+  // "Activos hoy" = empleados que tienen al menos 1 tarea pendiente
+  const activosHoy = empleados.filter((_, i) => tareasEmpleado.some(t => t.emp === i && !t.done)).length;
+  const setKpi = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setKpi('kpi-total-emp',   total);
+  setKpi('kpi-activos-emp', activosHoy);
+  setKpi('kpi-tareas-pend', pendTot);
+  setKpi('kpi-tareas-done', doneTot);
+}
+
+// ─── Filtrado de empleados ─────────────────────────────────────────────────────
+function filtrarEmpleados(q) {
+  empFiltroTexto = (q || '').toLowerCase();
+  renderEmpleados();
+}
+
+// ─── Render principal ─────────────────────────────────────────────────────────
 function renderEmpleados() {
+  renderEmpKpis();
   const g = document.getElementById('empleados-grid');
-  if(!empleados.length) { g.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:30px">No hay empleados registrados. Agrega el primero arriba. 👆</p>'; return; }
-  g.innerHTML = empleados.map((e,i)=>{
-    const tareas = tareasEmpleado.map((t,ti)=>({...t,ti})).filter(t=>t.emp===i);
-    const pendientes = tareas.filter(t=>!t.done).length;
+  if (!g) return;
+
+  const filtroRol = (document.getElementById('emp-filtro-rol') || {}).value || '';
+  let lista = empleados.map((e, i) => ({ e, i }));
+  if (empFiltroTexto) lista = lista.filter(({ e }) =>
+    (e.nombre + ' ' + e.rol + ' ' + (e.cedula||'')).toLowerCase().includes(empFiltroTexto));
+  if (filtroRol) lista = lista.filter(({ e }) => e.rol === filtroRol);
+
+  if (!lista.length) {
+    g.innerHTML = `<div style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:40px 20px">
+      ${empleados.length ? '🔍 Sin resultados para esa búsqueda.' : '👷 No hay empleados registrados todavía.<br><br><button onclick="abrirModalEmpleado()" style="background:linear-gradient(135deg,#166534,var(--green-bright));color:#061008;border:none;padding:11px 22px;border-radius:10px;font-weight:700;cursor:pointer;font-size:14px">+ Registrar primer empleado</button>'}
+    </div>`;
+    return;
+  }
+
+  g.innerHTML = lista.map(({ e, i }) => {
+    const tareas     = tareasEmpleado.map((t, ti) => ({ ...t, ti })).filter(t => t.emp === i);
+    const pendientes = tareas.filter(t => !t.done).length;
+    const completadas= tareas.filter(t => t.done).length;
+    const pct        = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
+    const color      = empColor(e.nombre);
+    const iniciales  = e.nombre.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
     const cuentaBadge = e.cuentaCreada
-      ? `<span style="font-size:10px;background:rgba(52,199,89,0.15);color:#34c759;border:1px solid rgba(52,199,89,0.3);padding:2px 7px;border-radius:99px;margin-left:6px">✅ Cuenta web</span>`
-      : `<span style="font-size:10px;background:rgba(255,200,0,0.12);color:#f0a500;border:1px solid rgba(255,200,0,0.3);padding:2px 7px;border-radius:99px;margin-left:6px">Sin cuenta</span>`;
+      ? `<span class="emp-badge verde">✅ Acceso web</span>`
+      : `<span class="emp-badge amarillo">Sin cuenta</span>`;
+    const jornadaLabel = { completa:'Tiempo completo', parcial:'Tiempo parcial', temporal:'Temporal', contrato:'Por contrato' }[e.jornada] || e.jornada || '';
+    const diasDesde = e.fechaIngreso
+      ? Math.floor((Date.now() - new Date(e.fechaIngreso)) / 86400000) + ' días en equipo'
+      : '';
+
     return `<div class="empleado-card">
-      <div class="empleado-head">
-        <div class="empleado-avatar">${e.nombre[0].toUpperCase()}</div>
-        <div style="flex:1">
-          <h3>${e.nombre}${cuentaBadge}</h3>
-          <p>${e.rol}${e.tel ? ' · ' + e.tel : ''}</p>
+      <div class="empleado-head" style="background:linear-gradient(135deg,${color}22,${color}44);">
+        <div class="empleado-avatar" style="background:${color};color:#fff">${iniciales}</div>
+        <div style="flex:1;min-width:0">
+          <h3 style="color:var(--text-dark);font-size:15px;margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.nombre}</h3>
+          <p style="color:var(--green-lime);font-size:11px;font-family:'Space Mono',monospace;margin:0">${e.rol}</p>
+          <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${cuentaBadge}${jornadaLabel ? `<span class="emp-badge gris">${jornadaLabel}</span>` : ''}</div>
         </div>
-        <button class="btn-edit-mini" onclick="editarEmpleado(${i})" title="Editar" style="color:#fff;">✏️</button>
+        <div style="display:flex;gap:4px">
+          <button onclick="verPerfilEmpleado(${i})" title="Ver perfil" class="emp-icon-btn">👁</button>
+          <button onclick="abrirModalEmpleado(${i})" title="Editar" class="emp-icon-btn">✏️</button>
+        </div>
       </div>
+
+      <!-- Barra de progreso de tareas -->
+      <div class="emp-progress-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-size:11px;font-family:'Space Mono',monospace;color:var(--text-light)">TAREAS · ${pendientes} pendiente${pendientes===1?'':'s'}</span>
+          <span style="font-size:11px;color:var(--green-bright)">${pct}%</span>
+        </div>
+        <div class="emp-progress-bar"><div class="emp-progress-fill" style="width:${pct}%;background:${color}"></div></div>
+        ${diasDesde ? `<div style="font-size:10px;color:var(--text-light);margin-top:5px">📅 ${diasDesde}</div>` : ''}
+      </div>
+
       <div class="empleado-body">
-        <div style="font-size:12px;font-family:'Space Mono',monospace;color:var(--text-light);margin-bottom:8px;">TAREAS ASIGNADAS · ${pendientes} pendiente${pendientes===1?'':'s'}</div>
-        ${tareas.length ? tareas.map(t=>`
-          <div class="empleado-tarea ${t.done?'hecha':''}">
-            <button class="et-check ${t.done?'ok':''}" onclick="toggleTareaEmp(${t.ti})">${t.done?'✓':''}</button>
-            <span style="flex:1">${t.text}${t.fecha?` <small style="color:var(--text-light)">(${fechaRelativa(t.fecha)})</small>`:''}</span>
-            <button onclick="delTareaEmp(${t.ti})" style="background:none;border:none;color:#ef5350;cursor:pointer;font-size:15px;">×</button>
-          </div>`).join('') : '<p style="font-size:13px;color:var(--text-light);">Sin tareas asignadas.</p>'}
+        ${tareas.length ? tareas.slice(0, 4).map(t => `
+          <div class="empleado-tarea ${t.done ? 'hecha' : ''}">
+            <button class="et-check ${t.done ? 'ok' : ''}" onclick="toggleTareaEmp(${t.ti})">${t.done ? '✓' : ''}</button>
+            <span style="flex:1;font-size:13px">${t.text}</span>
+            <button onclick="delTareaEmp(${t.ti})" style="background:none;border:none;color:#ef5350;cursor:pointer;font-size:15px;padding:0 2px">×</button>
+          </div>`).join('') + (tareas.length > 4 ? `<p style="font-size:12px;color:var(--text-light);padding:4px 0">+${tareas.length - 4} más — <a href="#" onclick="verPerfilEmpleado(${i});return false" style="color:var(--green-bright)">ver todo</a></p>` : '')
+        : '<p style="font-size:13px;color:var(--text-light);padding:4px 0">Sin tareas asignadas aún.</p>'}
+
         <div class="asignar-row">
           <input type="text" id="asig-${i}" placeholder="Asignar nueva tarea..." onkeydown="if(event.key==='Enter') asignarTarea(${i})">
           <button onclick="asignarTarea(${i})">+</button>
         </div>
-        <button class="empleado-del" onclick="removeEmpleado(${i})">Eliminar empleado</button>
+        <button class="empleado-del" onclick="removeEmpleado(${i})">🗑 Eliminar empleado</button>
       </div>
     </div>`;
   }).join('');
 }
-let editandoEmp = null;
-function editarEmpleado(i) {
-  editandoEmp = i;
+
+// ─── Ver perfil completo ───────────────────────────────────────────────────────
+function verPerfilEmpleado(i) {
   const e = empleados[i];
-  document.getElementById('emp-nombre').value = e.nombre;
-  document.getElementById('emp-rol').value = e.rol;
-  document.getElementById('emp-tel').value = e.tel || '';
-  document.getElementById('emp-email').value = '';
-  document.getElementById('emp-pass').value = '';
-  document.getElementById('btn-add-emp').textContent = '✏️ Guardar cambios';
-  document.getElementById('emp-nombre').focus();
+  if (!e) return;
+  const tareas     = tareasEmpleado.map((t, ti) => ({ ...t, ti })).filter(t => t.emp === i);
+  const pendientes = tareas.filter(t => !t.done).length;
+  const completadas= tareas.filter(t => t.done).length;
+  const color      = empColor(e.nombre);
+  const iniciales  = e.nombre.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const salario    = e.salario ? '₡ ' + Number(e.salario).toLocaleString('es-CR') : '—';
+  const ingreso    = e.fechaIngreso ? new Date(e.fechaIngreso).toLocaleDateString('es-CR', {day:'numeric',month:'long',year:'numeric'}) : '—';
+  const jornadaLabel = { completa:'Tiempo completo', parcial:'Tiempo parcial', temporal:'Temporal / zafra', contrato:'Por contrato' }[e.jornada] || e.jornada || '—';
+
+  document.getElementById('emp-perfil-titulo').textContent = '👷 ' + e.nombre;
+  document.getElementById('emp-perfil-body').innerHTML = `
+    <div style="text-align:center;padding:20px 0 10px">
+      <div style="width:72px;height:72px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;margin:0 auto 12px">${iniciales}</div>
+      <h3 style="color:var(--text-dark);margin:0;font-size:18px">${e.nombre}</h3>
+      <p style="color:var(--green-lime);font-size:12px;font-family:'Space Mono',monospace;margin:4px 0 0">${e.rol}</p>
+    </div>
+
+    <div class="emp-perfil-grid">
+      <div class="emp-perfil-dato"><small>📱 Teléfono</small><b>${e.tel || '—'}</b></div>
+      <div class="emp-perfil-dato"><small>🪪 Cédula</small><b>${e.cedula || '—'}</b></div>
+      <div class="emp-perfil-dato"><small>📧 Correo</small><b style="word-break:break-all">${e.email || '—'}</b></div>
+      <div class="emp-perfil-dato"><small>💰 Salario</small><b>${salario}</b></div>
+      <div class="emp-perfil-dato"><small>📅 Ingreso</small><b>${ingreso}</b></div>
+      <div class="emp-perfil-dato"><small>⏱ Jornada</small><b>${jornadaLabel}</b></div>
+    </div>
+
+    ${e.notas ? `<div style="background:rgba(52,199,89,0.07);border-radius:10px;padding:10px 14px;margin:0 20px 16px;font-size:13px;color:var(--text-mid)">📝 ${e.notas}</div>` : ''}
+
+    <div style="padding:0 20px 16px">
+      <div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--text-light);margin-bottom:10px">TODAS LAS TAREAS (${tareas.length}) · ${pendientes} pendiente${pendientes===1?'':'s'} · ${completadas} completada${completadas===1?'':'s'}</div>
+      ${tareas.length ? tareas.map(t => `
+        <div class="empleado-tarea ${t.done ? 'hecha' : ''}" style="border-radius:8px;background:rgba(0,0,0,0.15);padding:7px 10px;margin-bottom:5px">
+          <button class="et-check ${t.done ? 'ok' : ''}" onclick="toggleTareaEmp(${t.ti});verPerfilEmpleado(${i})">${t.done ? '✓' : ''}</button>
+          <span style="flex:1;font-size:13px">${t.text}</span>
+          <button onclick="delTareaEmp(${t.ti});verPerfilEmpleado(${i})" style="background:none;border:none;color:#ef5350;cursor:pointer;font-size:15px">×</button>
+        </div>`).join('')
+      : '<p style="font-size:13px;color:var(--text-light)">Sin tareas asignadas.</p>'}
+
+      <div class="asignar-row" style="margin-top:10px">
+        <input type="text" id="asig-perfil-${i}" placeholder="Asignar tarea desde perfil..." onkeydown="if(event.key==='Enter'){asignarTarea(${i});verPerfilEmpleado(${i})}">
+        <button onclick="asignarTarea(${i});verPerfilEmpleado(${i})">+</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;padding:0 20px 20px">
+      <button onclick="abrirModalEmpleado(${i});document.getElementById('emp-perfil-modal').classList.remove('open')" style="flex:1;background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;font-weight:600">✏️ Editar datos</button>
+      <button onclick="document.getElementById('emp-perfil-modal').classList.remove('open')" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text-mid);border-radius:10px;padding:10px;cursor:pointer;font-size:13px">Cerrar</button>
+    </div>`;
+
+  document.getElementById('emp-perfil-modal').classList.add('open');
 }
 
+// ─── Agregar / editar empleado ────────────────────────────────────────────────
 async function addEmpleado() {
-  const n     = document.getElementById('emp-nombre').value.trim();
-  const r     = document.getElementById('emp-rol').value;
-  const t     = document.getElementById('emp-tel').value.trim();
-  const email = document.getElementById('emp-email').value.trim();
-  const pass  = document.getElementById('emp-pass').value.trim();
-  const btn   = document.getElementById('btn-add-emp');
+  const n       = document.getElementById('emp-nombre').value.trim();
+  const r       = document.getElementById('emp-rol').value;
+  const t       = document.getElementById('emp-tel').value.trim();
+  const cedula  = document.getElementById('emp-cedula').value.trim();
+  const salario = document.getElementById('emp-salario').value.trim();
+  const notas   = document.getElementById('emp-notas').value.trim();
+  const jornada = document.getElementById('emp-jornada').value;
+  const fIngreso= document.getElementById('emp-fecha-ingreso').value;
+  const email   = document.getElementById('emp-email').value.trim();
+  const pass    = document.getElementById('emp-pass').value.trim();
+  const btn     = document.getElementById('btn-add-emp');
 
   if (!n) return toast('Escribe el nombre del empleado.', 'error');
 
-  // ── EDITAR (sin crear cuenta nueva) ──────────────────────
+  // ── EDITAR ──────────────────────────────────────────────────────────────────
   if (editandoEmp !== null) {
-    Object.assign(empleados[editandoEmp], {nombre:n, rol:r, tel:t, email: email||empleados[editandoEmp].email||''});
+    Object.assign(empleados[editandoEmp], { nombre:n, rol:r, tel:t, cedula, salario, notas, jornada, fechaIngreso:fIngreso,
+      email: email || empleados[editandoEmp].email || '' });
     editandoEmp = null;
-    btn.textContent = '+ Agregar y crear cuenta';
     toast('Empleado actualizado. ✏️');
     guardar(); renderEmpleados(); renderTareas();
-    ['emp-nombre','emp-tel','emp-email','emp-pass'].forEach(id=>document.getElementById(id).value='');
+    cerrarModalEmpleado();
     return;
   }
 
-  // ── CREAR CUENTA FIREBASE usando instancia secundaria ────
-  // Así la sesión del patrón NO se interrumpe
+  // ── CREAR CUENTA FIREBASE (instancia secundaria para no cerrar sesión del patrón) ──
+  const datosBase = { nombre:n, rol:r, tel:t, cedula, salario, notas, jornada, fechaIngreso:fIngreso, creadoEn: new Date().toISOString() };
+
   if (email && pass) {
     if (pass.length < 6) return toast('La contraseña debe tener mínimo 6 caracteres.', 'error');
-    btn.disabled = true; btn.textContent = 'Creando cuenta…';
+    btn.disabled = true; btn.textContent = '⏳ Creando cuenta…';
     try {
       const appSec  = getFirebaseSecundaria();
       const authSec = appSec.auth();
       const cred    = await authSec.createUserWithEmailAndPassword(email, pass);
       await cred.user.updateProfile({ displayName: n });
 
-      // Guardar rol en Firestore (desde la sesión del PATRÓN, no del empleado)
       try {
         await firebase.firestore().collection('usuarios').doc(cred.user.uid).set({
-          rol: 'empleado',
-          nombre: n,
-          email,
-          tel: t,
-          patronUid: sesion.uid,
-          creadoEn: new Date().toISOString()
+          ...datosBase, rol: 'empleado', email, patronUid: sesion.uid
         }, { merge: true });
       } catch(fe) { console.warn('Firestore:', fe); }
 
-      // Cerrar sesión SOLO en la instancia secundaria
       await authSec.signOut();
+      empleados.push({ ...datosBase, email, uid: cred.user.uid, cuentaCreada: true });
 
-      // Registrar empleado localmente y guardar
-      empleados.push({ nombre: n, rol: r, tel: t, email, uid: cred.user.uid, cuentaCreada: true });
-      // Guardar patronUid propio en Firestore
       try {
         await firebase.firestore().collection('usuarios').doc(sesion.uid).set(
-          { rol: 'agricultor', nombre: sesion.nombre, email: sesion.email }, { merge: true }
-        );
+          { rol: 'agricultor', nombre: sesion.nombre, email: sesion.email }, { merge: true });
       } catch(fe) {}
 
       await mostrarCredencialesEmpleado(n, email, pass);
 
-    } catch(e) {
-      btn.disabled = false; btn.textContent = '+ Agregar y crear cuenta';
-      return toast('Error: ' + (tradFirebaseError(e.code) || e.message), 'error');
+    } catch(err) {
+      btn.disabled = false; btn.textContent = '+ Registrar empleado';
+      return toast('Error: ' + (tradFirebaseError(err.code) || err.message), 'error');
     }
   } else {
-    // Sin cuenta web — solo registro local
-    empleados.push({ nombre: n, rol: r, tel: t, email: email || '', cuentaCreada: false });
-    toast('Empleado registrado (sin cuenta web). 👷');
+    empleados.push({ ...datosBase, email: email || '', cuentaCreada: false });
+    toast('Empleado registrado sin cuenta web. 👷');
   }
 
-  btn.disabled = false; btn.textContent = '+ Agregar y crear cuenta';
+  btn.disabled = false; btn.textContent = '+ Registrar empleado';
   guardar(); renderEmpleados(); renderTareas();
-  ['emp-nombre','emp-tel','emp-email','emp-pass'].forEach(id=>document.getElementById(id).value='');
+  cerrarModalEmpleado();
 }
+
 async function removeEmpleado(i) {
-  if (!await confirmar('¿Eliminar a ' + empleados[i].nombre + ' y todas sus tareas?')) return;
-  tareasEmpleado = tareasEmpleado.filter(t=>t.emp!==i).map(t=> t.emp>i ? {...t, emp:t.emp-1} : t);
-  empleados.splice(i,1);
-  guardar();
-  renderEmpleados();
-  renderDashboard();
+  if (!await confirmar('¿Eliminar a ' + empleados[i].nombre + ' y todas sus tareas? Esta acción no se puede deshacer.', '🗑')) return;
+  tareasEmpleado = tareasEmpleado.filter(t => t.emp !== i).map(t => t.emp > i ? { ...t, emp: t.emp - 1 } : t);
+  empleados.splice(i, 1);
+  guardar(); renderEmpleados(); renderDashboard();
   toast('Empleado eliminado.', 'info');
 }
+
 function asignarTarea(i) {
-  const inp = document.getElementById('asig-'+i);
-  const text = inp.value.trim();
-  if(!text) return;
-  tareasEmpleado.push({emp:i, text, done:false, fechaAsignada: new Date().toISOString()});
+  const inp  = document.getElementById('asig-' + i) || document.getElementById('asig-perfil-' + i);
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+  tareasEmpleado.push({ emp: i, text, done: false, fechaAsignada: new Date().toISOString() });
   guardar();
-  inp.value='';
+  if (inp) inp.value = '';
   renderEmpleados();
   renderDashboard();
-  toast(`✅ Tarea asignada a ${empleados[i]?.nombre||'empleado'}`);
+  toast(`✅ Tarea asignada a ${empleados[i]?.nombre || 'empleado'}`);
 }
+
 function toggleTareaEmp(ti) { tareasEmpleado[ti].done = !tareasEmpleado[ti].done; guardar(); renderEmpleados(); renderDashboard(); }
-function delTareaEmp(ti) { tareasEmpleado.splice(ti,1); guardar(); renderEmpleados(); renderDashboard(); }
+function delTareaEmp(ti)    { tareasEmpleado.splice(ti, 1); guardar(); renderEmpleados(); renderDashboard(); }
 
 // ===== MODAL CREDENCIALES EMPLEADO =====
 function mostrarCredencialesEmpleado(nombre, email, pass) {

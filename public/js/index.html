@@ -21,11 +21,8 @@
   <!-- Mapas (Leaflet) y PDF (jsPDF) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
-  <!-- Leaflet plugins extras -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- Estilos de Cultyra -->
@@ -532,14 +529,7 @@
         </div>
         <button class="btn-primary" onclick="openFincaModal()">+ Agregar Finca</button>
       </div>
-      <div id="mapa-general-wrap" style="position:relative">
-        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-          <input id="map-search-input" type="text" placeholder="🔍 Buscar lugar en el mapa..." style="flex:1;min-width:180px;background:rgba(255,255,255,0.07);border:1px solid rgba(52,199,89,0.3);color:#e0f0e4;border-radius:10px;padding:8px 14px;font-size:13px" onkeydown="if(event.key==='Enter')buscarEnMapa()">
-          <button onclick="buscarEnMapa()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap">Buscar</button>
-          <button onclick="centrarEnMiUbicacion()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer" title="Mi ubicación">📍</button>
-        </div>
-        <div id="mapa-general"></div>
-      </div>
+      <div id="mapa-general"></div>
       <div class="fincas-grid" id="fincas-grid">
         <!-- populated by JS -->
       </div>
@@ -591,17 +581,12 @@
           <input type="hidden" id="finca-ubicacion">
         </div>
         <div class="modal-group"><label>Seleccione el área de su terreno en el mapa 🗺️</label>
-          <div style="display:flex;gap:6px;margin-bottom:6px">
-            <input id="finca-map-search" type="text" placeholder="🔍 Buscar lugar..." style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(52,199,89,0.3);color:#e0f0e4;border-radius:8px;padding:6px 12px;font-size:12px" onkeydown="if(event.key==='Enter')buscarEnMapaFinca()">
-            <button onclick="buscarEnMapaFinca()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Ir</button>
-            <button onclick="centrarFincaEnUbicacion()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer" title="Mi ubicación">📍</button>
-          </div>
           <div id="finca-map"></div>
           <div class="map-botones">
             <button type="button" id="btn-dibujar" onclick="empezarDibujo()">⬠ Dibujar terreno</button>
             <button type="button" id="btn-borrar-dibujo" onclick="borrarDibujo()">🗑️ Borrar</button>
           </div>
-          <div class="map-hint">1) Ubique su zona con los menús de arriba o busque · 2) Presione "Dibujar terreno" y marque las esquinas · 3) Cierre tocando el primer punto. El área se calcula sola.</div>
+          <div class="map-hint">1) Ubique su zona con los menús de arriba · 2) Presione "Dibujar terreno" y marque las esquinas · 3) Cierre tocando el primer punto. El área se calcula sola.</div>
         </div>
         <div class="modal-fila">
         <div class="modal-group"><label>Área (hectáreas)</label><input type="number" id="finca-area" placeholder="Se calcula al dibujar" step="0.01"></div>

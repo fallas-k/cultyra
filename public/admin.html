@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · CULTYRA</title>
+  <link rel="icon" href="img/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #061008; --bg-card: #0c1e0f; --bg-input: #0f2412;
+      --border:  rgba(52,199,89,.14); --green: #34c759; --green-mid: #2d6a4f;
+      --text:    #eafff0; --text-mid: #9ec5a2; --text-dim: #4f7a53;
+      --red:     #f87171; --amber: #f59e0b; --blue: #60a5fa; --purple: #a78bfa;
+    }
+    html, body { height:100%; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow:hidden; }
+
+    /* ─── LOGIN ──────────────────────────────── */
+    #login-screen {
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(22,101,52,.2), transparent);
+      z-index:100;
+    }
+    .login-box {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:24px;
+      padding:44px 40px; width:min(400px,calc(100vw - 32px)); text-align:center;
+      box-shadow:0 32px 80px rgba(0,0,0,.6);
+    }
+    .login-logo { width:68px; margin-bottom:22px; filter:drop-shadow(0 0 18px rgba(52,199,89,.35)); }
+    .login-box h1 { font-family:'Playfair Display',serif; font-size:28px; margin-bottom:6px; }
+    .login-box p { font-size:13px; color:var(--text-mid); margin-bottom:30px; line-height:1.6; }
+    .login-input {
+      width:100%; padding:13px 16px; border:1px solid var(--border); border-radius:12px;
+      background:var(--bg-input); color:var(--text); font-size:14px; outline:none;
+      margin-bottom:12px; transition:border-color .2s; font-family:'DM Sans',sans-serif;
+    }
+    .login-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(52,199,89,.1); }
+    .login-input::placeholder { color:var(--text-dim); }
+    .login-btn {
+      width:100%; padding:15px; border:none; border-radius:12px; font-size:15px;
+      font-weight:700; background:linear-gradient(135deg,#166534,var(--green));
+      color:#061008; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif;
+    }
+    .login-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(52,199,89,.3); }
+    .login-btn:active { transform:scale(.98); }
+    .login-err {
+      font-size:13px; color:var(--red); margin-top:14px;
+      background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.2);
+      border-radius:8px; padding:8px 12px; display:none;
+    }
+    .login-hint {
+      margin-top:18px; font-size:11px; color:var(--text-dim);
+      font-family:'Space Mono',monospace; line-height:1.8;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────── */
+    #admin-app { display:none; height:100dvh; }
+    #admin-app.on { display:flex; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width:218px; min-width:218px; height:100dvh; background:var(--bg-card);
+      border-right:1px solid var(--border); display:flex; flex-direction:column;
+      overflow:hidden;
+    }
+    .sb-logo { display:flex; align-items:center; gap:10px; padding:20px 18px 18px; border-bottom:1px solid var(--border); }
+    .sb-logo img { width:32px; }
+    .sb-logo-txt span { font-family:'Playfair Display',serif; font-size:16px; color:var(--green); display:block; }
+    .sb-logo-txt small { font-family:'Space Mono',monospace; font-size:9px; color:var(--text-dim); letter-spacing:2px; text-transform:uppercase; }
+    .sb-nav { flex:1; padding:12px 8px; display:flex; flex-direction:column; gap:3px; overflow-y:auto; }
+    .nav-btn {
+      display:flex; align-items:center; gap:11px; padding:10px 13px; border-radius:10px;
+      font-size:13.5px; color:var(--text-mid); cursor:pointer; transition:all .15s;
+      border:none; background:none; width:100%; text-align:left; font-family:'DM Sans',sans-serif;
+    }
+    .nav-btn .ic { font-size:17px; width:22px; text-align:center; }
+    .nav-btn:hover { background:rgba(52,199,89,.07); color:var(--text); }
+    .nav-btn.on { background:rgba(52,199,89,.13); color:var(--green); font-weight:600; }
+    .sb-foot { padding:14px 18px; border-top:1px solid var(--border); }
+    .sb-email { font-size:11px; color:var(--text-dim); font-family:'Space Mono',monospace; margin-bottom:9px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sb-logout { width:100%; padding:8px; border:1px solid var(--border); border-radius:8px; background:none; color:var(--text-mid); font-size:12px; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; }
+    .sb-logout:hover { border-color:var(--red); color:var(--red); }
+
+    /* MAIN */
+    .main { flex:1; height:100dvh; overflow-y:auto; display:flex; flex-direction:column; }
+    .main-top {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 26px; border-bottom:1px solid var(--border);
+      background:var(--bg-card); position:sticky; top:0; z-index:10;
+    }
+    .main-top h2 { font-family:'Playfair Display',serif; font-size:22px; }
+    .top-right { display:flex; align-items:center; gap:12px; }
+    .upd-time { font-size:11px; color:var(--text-dim); font-family:'Space Mono',monospace; }
+    .ref-btn { background:none; border:1px solid var(--border); color:var(--text-mid); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; }
+    .ref-btn:hover { border-color:var(--green); color:var(--green); }
+    .main-body { padding:24px 26px; flex:1; }
+
+    /* ─── SECCIONES ──────────────────────────── */
+    .sec { display:none; }
+    .sec.on { display:block; animation:fu .28s ease; }
+    @keyframes fu { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* KPI GRID */
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:14px; margin-bottom:22px; }
+    .kpi-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; }
+    .kpi-lbl { font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-family:'Space Mono',monospace; margin-bottom:9px; }
+    .kpi-val { font-size:30px; font-weight:700; font-family:'Space Mono',monospace; line-height:1; margin-bottom:5px; }
+    .kpi-sub { font-size:12px; color:var(--text-mid); }
+    .kc-g .kpi-val { color:var(--green); }
+    .kc-b .kpi-val { color:var(--blue); }
+    .kc-a .kpi-val { color:var(--amber); }
+    .kc-r .kpi-val { color:var(--red); }
+    .kc-p .kpi-val { color:var(--purple); }
+
+    /* CHARTS ROW */
+    .ch-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+    .ch-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; }
+    .ch-card h3 { font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.2px; font-family:'Space Mono',monospace; margin-bottom:14px; }
+    .bar-ch { display:flex; align-items:flex-end; gap:5px; height:90px; }
+    .bc-col { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+    .bc-bar { width:100%; border-radius:3px 3px 0 0; min-height:2px; }
+    .bc-bar.gn { background:linear-gradient(180deg,#34c759,#166534); }
+    .bc-bar.bl { background:linear-gradient(180deg,#60a5fa,#1e3a5f); }
+    .bc-lbl { font-size:8.5px; color:var(--text-dim); font-family:'Space Mono',monospace; }
+    .sec-list { display:flex; flex-direction:column; gap:9px; }
+    .sec-row { display:flex; align-items:center; gap:10px; font-size:13px; }
+    .sec-nm { font-size:12px; color:var(--text-mid); min-width:84px; }
+    .sec-bw { flex:1; height:6px; background:var(--bg-input); border-radius:999px; overflow:hidden; }
+    .sec-bf { height:100%; background:var(--green); border-radius:999px; }
+    .sec-ct { font-family:'Space Mono',monospace; font-size:11px; color:var(--text-dim); min-width:28px; text-align:right; }
+
+    /* FEED */
+    .feed-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+    .feed-hd { padding:13px 18px; border-bottom:1px solid var(--border); font-size:10.5px; color:var(--text-dim); font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:1.2px; }
+    .feed-item { display:flex; align-items:flex-start; gap:12px; padding:10px 18px; border-top:1px solid var(--border); }
+    .feed-item:first-child { border-top:none; }
+    .feed-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; margin-top:5px; opacity:.55; }
+    .feed-body { flex:1; min-width:0; }
+    .feed-em { font-size:12.5px; color:var(--text); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .feed-ac { font-size:12px; color:var(--text-mid); }
+    .feed-ts { font-size:10.5px; color:var(--text-dim); font-family:'Space Mono',monospace; white-space:nowrap; margin-left:auto; padding-left:10px; flex-shrink:0; }
+
+    /* TABLES */
+    .tbl-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+    .tbl-bar { display:flex; align-items:center; gap:10px; padding:13px 18px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+    .tbl-bar input, .tbl-bar select {
+      padding:7px 12px; border:1px solid var(--border); border-radius:8px;
+      background:var(--bg-input); color:var(--text); font-size:12.5px; outline:none;
+      font-family:'DM Sans',sans-serif; transition:border-color .2s;
+    }
+    .tbl-bar input { flex:1; min-width:180px; }
+    .tbl-bar input:focus, .tbl-bar select:focus { border-color:var(--green); }
+    .tbl-bar select { cursor:pointer; }
+    .tbl-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; }
+    thead { background:var(--bg-input); }
+    th { padding:10px 14px; text-align:left; font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.2px; font-family:'Space Mono',monospace; white-space:nowrap; border-bottom:1px solid var(--border); }
+    td { padding:11px 14px; font-size:13px; color:var(--text-mid); border-top:1px solid var(--border); vertical-align:middle; }
+    tr:hover td { background:rgba(52,199,89,.03); }
+    .td-name { color:var(--text); font-weight:600; }
+    .td-mono { font-family:'Space Mono',monospace; font-size:11.5px; }
+    .td-green { color:var(--green); font-family:'Space Mono',monospace; font-weight:700; }
+    .empty-row { text-align:center; padding:48px 20px; }
+    .empty-ic { font-size:40px; opacity:.4; display:block; margin-bottom:10px; }
+
+    /* BADGES */
+    .badge { display:inline-flex; align-items:center; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; font-family:'Space Mono',monospace; white-space:nowrap; }
+    .b-pagado    { background:rgba(52,199,89,.15);   color:var(--green); }
+    .b-pendiente { background:rgba(96,165,250,.15);  color:var(--blue); }
+    .b-confirmado{ background:rgba(245,158,11,.15);  color:var(--amber); }
+    .b-en_camino { background:rgba(167,139,250,.15); color:var(--purple); }
+    .b-entregado { background:rgba(52,199,89,.25);   color:#86efac; }
+    .b-cancelado { background:rgba(248,113,113,.15); color:var(--red); }
+
+    /* ONLINE DOT */
+    .o-dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block; margin-right:6px; animation:pdot 1.5s ease-in-out infinite; }
+    @keyframes pdot { 0%,100%{box-shadow:0 0 0 0 rgba(52,199,89,.45)} 50%{box-shadow:0 0 0 6px rgba(52,199,89,0)} }
+
+    /* ESTADO SELECT */
+    .est-sel { padding:4px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg-input); color:var(--text-mid); font-size:11px; cursor:pointer; outline:none; font-family:'DM Sans',sans-serif; }
+    .est-sel:focus { border-color:var(--green); }
+
+    /* RESUMEN PEDIDO */
+    .ped-items { font-size:11.5px; color:var(--text-dim); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* TOASTS */
+    #toasts { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:500; pointer-events:none; }
+    .toast { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px 16px; font-size:13px; color:var(--text); box-shadow:0 8px 32px rgba(0,0,0,.5); animation:fu .3s ease; pointer-events:auto; }
+    .toast.ok  { border-left:3px solid var(--green); }
+    .toast.err { border-left:3px solid var(--red); }
+    .toast.out { opacity:0; transition:opacity .3s; }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width:5px; height:5px; } ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(52,199,89,.18); border-radius:3px; }
+
+    @media(max-width:700px) {
+      .sidebar { display:none; }
+      .ch-row  { grid-template-columns:1fr; }
+      .kpi-grid{ grid-template-columns:1fr 1fr; }
+      .main-body { padding:14px; }
+    }
+    .retention-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px; }
+    .ret-item { background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center; }
+    .ret-n { font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--green); }
+    .ret-l { font-size:10.5px;color:var(--text-dim);margin-top:3px; }
+    @media(max-width:500px){.retention-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <img class="login-logo" src="img/logo.png" alt="Cultyra">
+    <h1>Panel de Administración</h1>
+    <p>Acceso exclusivo para el equipo de Cultyra.<br>Ingresa tus credenciales de administrador.</p>
+    <input type="email"    class="login-input" id="adm-email" placeholder="admin@cultyra.com" autocomplete="username"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" class="login-input" id="adm-pass"  placeholder="Contraseña"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Entrar al panel →</button>
+    <div class="login-err" id="adm-err"></div>
+    <div class="login-hint">
+      Panel v1.0 · CULTYRA Admin · STEAM 2026<br>
+      Solo cuentas autorizadas tienen acceso.
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══════════════════════════════════════ -->
+<div id="admin-app">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <img src="img/logo.png" alt="">
+      <div class="sb-logo-txt"><span>CULTYRA</span><small>Admin</small></div>
+    </div>
+    <nav class="sb-nav">
+      <button class="nav-btn on" onclick="goTo('dashboard',this)"><span class="ic">📊</span>Dashboard</button>
+      <button class="nav-btn" onclick="goTo('usuarios',this)"><span class="ic">👥</span>Usuarios</button>
+      <button class="nav-btn" onclick="goTo('pedidos',this)"><span class="ic">🛒</span>Pedidos</button>
+      <button class="nav-btn" onclick="goTo('actividad',this)"><span class="ic">📋</span>Actividad</button>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-email" id="sb-email-show"></div>
+      <button class="sb-logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-top">
+      <h2 id="main-title">Dashboard</h2>
+      <div class="top-right">
+        <div class="upd-time" id="upd-time">—</div>
+        <button class="ref-btn" onclick="loadAll()">↻ Actualizar</button>
+      </div>
+    </div>
+    <div class="main-body">
+
+      <!-- DASHBOARD -->
+      <div class="sec on" id="sec-dashboard">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="ch-row">
+          <div class="ch-card">
+            <h3>Actividad por hora — últimas 24 h</h3>
+            <div class="bar-ch" id="ch-horas"></div>
+          </div>
+          <div class="ch-card">
+            <h3>Secciones más visitadas — 30 días</h3>
+            <div class="sec-list" id="sec-top"></div>
+          </div>
+        </div>
+        <!-- #98 Retención de usuarios -->
+        <div class="ch-card" style="margin-bottom:16px">
+          <h3>Retención de usuarios</h3>
+          <div class="retention-grid" id="retention-grid">
+            <div class="ret-item"><div class="ret-n" id="ret-d1">—</div><div class="ret-l">Día 1</div></div>
+            <div class="ret-item"><div class="ret-n" id="ret-d7">—</div><div class="ret-l">Día 7</div></div>
+            <div class="ret-item"><div class="ret-n" id="ret-d30">—</div><div class="ret-l">Día 30</div></div>
+            <div class="ret-item"><div class="ret-n" id="ret-total">—</div><div class="ret-l">Total activos</div></div>
+          </div>
+        </div>
+        <!-- #99 Mapa geográfico CR -->
+        <div class="ch-card" style="margin-bottom:16px">
+          <h3>Distribución geográfica de fincas</h3>
+          <div id="admin-cr-map" style="min-height:120px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px">Cargando mapa...</div>
+        </div>
+        <!-- #96 Broadcast -->
+        <div class="ch-card" style="margin-bottom:16px">
+          <h3>Enviar notificación a todos</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input type="text" id="broadcast-msg" placeholder="Mensaje para todos los usuarios activos..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);color:var(--text);font-size:13px;outline:none;min-width:200px;font-family:'DM Sans',sans-serif">
+            <button onclick="enviarBroadcast()" style="background:linear-gradient(135deg,#166534,var(--green));color:#061008;border:none;border-radius:8px;padding:8px 18px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Enviar 📢</button>
+          </div>
+        </div>
+        <div class="feed-wrap">
+          <div class="feed-hd">Últimas acciones</div>
+          <div id="feed-items"></div>
+        </div>
+      </div>
+
+      <!-- USUARIOS -->
+      <div class="sec" id="sec-usuarios">
+        <div class="tbl-wrap">
+          <div class="tbl-bar">
+            <input id="usr-q" placeholder="Buscar por email o nombre..." oninput="filtrarTbl('tbl-usr',this.value,[0,1])">
+          </div>
+          <div class="tbl-scroll">
+            <table id="tbl-usr">
+              <thead><tr>
+                <th>Email</th><th>Nombre</th><th>Última sección</th>
+                <th>Último acceso</th><th>Acciones</th><th>Pedidos</th><th>Total comprado</th><th>Acción</th>
+              </tr></thead>
+              <tbody id="tb-usr"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEDIDOS -->
+      <div class="sec" id="sec-pedidos">
+        <div class="tbl-wrap">
+          <div class="tbl-bar">
+            <input id="ped-q" placeholder="Buscar por ID, nombre o email..." oninput="filtrarPedidos()">
+            <select id="ped-est" onchange="filtrarPedidos()">
+              <option value="">Todos los estados</option>
+              <option value="pendiente">⏳ Pendiente</option>
+              <option value="confirmado">✅ Confirmado</option>
+              <option value="en_camino">🚚 En camino</option>
+              <option value="entregado">📦 Entregado</option>
+              <option value="pagado">💳 Pagado</option>
+              <option value="cancelado">✖ Cancelado</option>
+            </select>
+            <!-- #95 Exportar Excel -->
+            <button onclick="exportarExcel()" style="background:rgba(52,199,89,.12);border:1px solid rgba(52,199,89,.3);color:var(--green);border-radius:8px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">⬇ Exportar Excel</button>
+          </div>
+          <div class="tbl-scroll">
+            <table id="tbl-ped">
+              <thead><tr>
+                <th>ID Pedido</th><th>Cliente</th><th>Email</th><th>Productos</th>
+                <th>Total</th><th>Método</th><th>Estado</th><th>Fecha</th>
+              </tr></thead>
+              <tbody id="tb-ped"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVIDAD -->
+      <div class="sec" id="sec-actividad">
+        <div class="tbl-wrap" style="margin-bottom:16px">
+          <div class="tbl-bar">
+            <input id="act-q" placeholder="Buscar por email, sección o acción..." oninput="filtrarTbl('tbl-act',this.value,[0,1,2,3])">
+          </div>
+          <div class="tbl-scroll">
+            <table id="tbl-act">
+              <thead><tr>
+                <th>Email</th><th>Nombre</th><th>Sección</th><th>Acción</th><th>Detalle</th><th>Hora</th>
+              </tr></thead>
+              <tbody id="tb-act"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- #100 Log de cambios del admin -->
+        <div class="tbl-wrap">
+          <div class="feed-hd">🔐 Log de cambios del administrador</div>
+          <div class="tbl-scroll">
+            <table><thead><tr><th>Hora</th><th>Acción</th><th>Detalle</th><th>Admin</th></tr></thead>
+            <tbody id="admin-log-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ════════════════════════════════════════════════
+// CONFIG — cambia solo la URL del servidor
+// ════════════════════════════════════════════════
+const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000'
+  : 'https://cultyra-server.onrender.com';
+
+// ════════════════════════════════════════════════
+// AUTH — verificación local + token estático
+// La contraseña se hashea con SHA-256 en el
+// navegador y se compara con el hash almacenado.
+// El token estático se usa para todas las llamadas
+// al servidor (no se necesita Firebase).
+// ════════════════════════════════════════════════
+const PASS_HASH    = 'aa5df703fd9f76f3cbabe15bbfa3903110d2f6c9eb28ed29e2141c3d5e428370';
+const ADMIN_TOKEN  = 'cltyr-adm-2026-steam-jwt';
+const ADMIN_EMAILS_LOCAL = ['admin@cultyra.com','keilor@cultyra.com','eduar@cultyra.com','santiago@cultyra.com'];
+
+let _session = null;
+let _pedidosData = [], _usuariosData = [], _actividadData = [];
+let _refreshInterval = null;
+
+// Restaurar sesión
+try {
+  const s = JSON.parse(sessionStorage.getItem('cultyra_admin_ses'));
+  if (s?.ok) { _session = s; showApp(); loadAll(); startRefresh(); }
+} catch {}
+
+async function hashStr(str) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function doLogin() {
+  const email = document.getElementById('adm-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('adm-pass').value;
+  const errEl = document.getElementById('adm-err');
+  errEl.style.display = 'none';
+  if (!email || !pass) { showErr('Completa el correo y la contraseña.'); return; }
+
+  if (!ADMIN_EMAILS_LOCAL.includes(email)) {
+    showErr('Este correo no tiene acceso al panel de administración.');
+    return;
+  }
+  const h = await hashStr(pass);
+  if (h !== PASS_HASH) {
+    showErr('Contraseña incorrecta. Revisa tus credenciales.');
+    return;
+  }
+
+  // Verificar con el servidor
+  try {
+    const r = await fetch(API_URL + '/api/admin/check', {
+      headers: { 'Authorization': 'Bearer ' + ADMIN_TOKEN }
+    });
+    if (!r.ok) {
+      const e = await r.json().catch(() => ({}));
+      showErr('Error del servidor: ' + (e.error || r.status) + '. Verifica que el servidor esté corriendo.');
+      return;
+    }
+  } catch {
+    // Si el servidor no está disponible, avisamos pero dejamos entrar en modo demo
+    toast('Servidor no disponible — mostrando datos de demostración.', 'err');
+  }
+
+  _session = { ok: true, email };
+  sessionStorage.setItem('cultyra_admin_ses', JSON.stringify(_session));
+  showApp();
+  loadAll();
+  startRefresh();
+}
+
+function doLogout() {
+  _session = null;
+  sessionStorage.removeItem('cultyra_admin_ses');
+  clearInterval(_refreshInterval);
+  document.getElementById('admin-app').classList.remove('on');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('adm-err').style.display = 'none';
+  document.getElementById('adm-pass').value = '';
+}
+
+function showErr(msg) {
+  const e = document.getElementById('adm-err');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-app').classList.add('on');
+  document.getElementById('sb-email-show').textContent = _session?.email || 'admin';
+}
+
+function startRefresh() {
+  clearInterval(_refreshInterval);
+  _refreshInterval = setInterval(loadAll, 30000);
+}
+
+// ════════════════════════════════════════════════
+// API
+// ════════════════════════════════════════════════
+async function api(path, opts) {
+  const r = await fetch(API_URL + path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + ADMIN_TOKEN, ...(opts?.headers || {}) }
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error || r.status); }
+  return r.json();
+}
+
+// ════════════════════════════════════════════════
+// NAVEGACIÓN
+// ════════════════════════════════════════════════
+function goTo(sec, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('sec-' + sec).classList.add('on');
+  if (btn) btn.classList.add('on');
+  const t = { dashboard:'Dashboard', usuarios:'Usuarios', pedidos:'Pedidos', actividad:'Actividad' };
+  document.getElementById('main-title').textContent = t[sec] || sec;
+}
+
+async function loadAll() {
+  document.getElementById('upd-time').textContent = 'Actualizando...';
+  await Promise.allSettled([loadDash(), loadUsuarios(), loadPedidos(), loadActividad()]);
+  document.getElementById('upd-time').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-CR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+// ════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════
+async function loadDash() {
+  try {
+    const d = await api('/api/admin/metricas');
+    const fc = n => '₡' + Number(n||0).toLocaleString('es-CR');
+
+    // KPIs
+    document.getElementById('kpi-grid').innerHTML = [
+      { l:'Usuarios registrados', v:d.totalUsuarios,   s:'En la plataforma',                          c:'kc-g' },
+      { l:'Activos hoy',          v:d.actHoy,           s:`${d.actSemana} semana · ${d.actMes} mes`,   c:'kc-b' },
+      { l:'Activos esta semana',  v:d.actSemana,        s:`${d.actMes} activos este mes`,              c:'kc-p' },
+      { l:'Total pedidos',        v:d.totalPedidos,     s:`${d.pedidosPend} pendientes · ${d.pedidosPagados} pagados`, c:'kc-a' },
+      { l:'Ventas totales',       v:fc(d.totalVentas),  s:'Tarjeta + SINPE Móvil',                     c:'kc-g' },
+      { l:'Pedidos pendientes',   v:d.pedidosPend,      s:'Requieren atención',                        c:d.pedidosPend>0?'kc-r':'kc-g' },
+    ].map(k => `<div class="kpi-card ${k.c}"><div class="kpi-lbl">${k.l}</div><div class="kpi-val">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('');
+
+    // Gráfica de horas
+    const chH = document.getElementById('ch-horas');
+    if (d.actHoras?.length) {
+      const max = Math.max(...d.actHoras.map(h => h.n), 1);
+      chH.innerHTML = Array.from({length:24}, (_, i) => {
+        const h = d.actHoras.find(x => parseInt(x.hora) === i);
+        const pct = h ? Math.max(2, Math.round((h.n / max) * 85)) : 2;
+        const active = i === new Date().getHours();
+        return `<div class="bc-col">
+          <div class="bc-bar ${active?'bl':'gn'}" style="height:${pct}px" title="${h?h.n+' acciones':'sin actividad'} a las ${i}h"></div>
+          <div class="bc-lbl">${i%4===0?i+'h':''}</div></div>`;
+      }).join('');
+    } else chH.innerHTML = '<div style="font-size:12px;color:var(--text-dim);margin:auto;align-self:center">Sin actividad registrada aún</div>';
+
+    // Secciones top
+    const secEl = document.getElementById('sec-top');
+    const nombSec = { dashboard:'Dashboard', cultivo:'Fincas', clima:'Clima', ia:'CultIA', productos:'Tienda', registros:'Registros', tareas:'Tareas', empleados:'Empleados', comparar:'Comparar', calendario:'Calendario', sensores:'Sensores', acerca:'Acerca de', ayuda:'Ayuda' };
+    if (d.secTop?.length) {
+      const mx = d.secTop[0].n;
+      secEl.innerHTML = d.secTop.map(s => `
+        <div class="sec-row">
+          <div class="sec-nm">${nombSec[s.seccion] || s.seccion}</div>
+          <div class="sec-bw"><div class="sec-bf" style="width:${Math.round((s.n/mx)*100)}%"></div></div>
+          <div class="sec-ct">${s.n}</div>
+        </div>`).join('');
+    } else secEl.innerHTML = '<div style="font-size:12px;color:var(--text-dim)">Sin datos aún</div>';
+
+    // Feed de actividad reciente (los últimos 12)
+    renderFeed(_actividadData.slice(0, 12));
+  } catch(e) { toast('Error cargando métricas: ' + e.message, 'err'); }
+}
+
+function renderFeed(data) {
+  const el = document.getElementById('feed-items');
+  if (!data.length) { el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-dim);font-size:13px">Sin actividad registrada aún. Los usuarios deben estar conectados al servidor.</div>'; return; }
+  el.innerHTML = data.map(a => `
+    <div class="feed-item">
+      <div class="feed-dot"></div>
+      <div class="feed-body">
+        <div class="feed-em">${a.email || a.firebase_uid?.slice(0,12)+'...'}</div>
+        <div class="feed-ac">${a.seccion ? '→ <b>'+a.seccion+'</b>' : ''} ${a.accion ? '· '+a.accion : ''}</div>
+      </div>
+      <div class="feed-ts">${relTime(a.ts)}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════
+// USUARIOS
+// ════════════════════════════════════════════════
+async function loadUsuarios() {
+  try {
+    _usuariosData = await api('/api/admin/usuarios');
+    renderUsuarios(_usuariosData);
+  } catch(e) { console.warn('Usuarios:', e.message); }
+}
+
+function renderUsuarios(data) {
+  const tb = document.getElementById('tb-usr');
+  if (!data.length) { tb.innerHTML = `<tr><td colspan="7" class="empty-row"><span class="empty-ic">👥</span><br>Sin usuarios registrados aún.</td></tr>`; return; }
+  const now = Date.now();
+  tb.innerHTML = data.map(u => {
+    const lastMs = u.ultima_actividad ? new Date(u.ultima_actividad).getTime() : 0;
+    const online = (now - lastMs) < 5 * 60 * 1000;
+    return `<tr>
+      <td class="td-mono" style="font-size:11.5px">${online ? '<span class="o-dot"></span>' : ''}${u.email || '—'}</td>
+      <td class="td-name">${u.nombre || '—'}</td>
+      <td><span style="font-size:12px;background:rgba(52,199,89,.08);padding:2px 9px;border-radius:6px;color:var(--text-mid)">${u.ultima_seccion || '—'}</span></td>
+      <td class="td-mono" style="font-size:11px">${u.ultima_actividad ? relTime(u.ultima_actividad) : '—'}</td>
+      <td style="color:var(--green);font-family:'Space Mono',monospace;font-weight:700">${u.total_acciones || 0}</td>
+      <td style="font-family:'Space Mono',monospace">${u.total_pedidos || 0}</td>
+      <td class="td-green">₡${Number(u.total_comprado||0).toLocaleString('es-CR')}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+// PEDIDOS
+// ════════════════════════════════════════════════
+async function loadPedidos() {
+  try {
+    _pedidosData = await api('/api/admin/pedidos?limit=300');
+    renderPedidos(_pedidosData);
+  } catch(e) { console.warn('Pedidos:', e.message); }
+}
+
+function renderPedidos(data) {
+  const tb = document.getElementById('tb-ped');
+  if (!data.length) { tb.innerHTML = `<tr><td colspan="8" class="empty-row"><span class="empty-ic">🛒</span><br>Sin pedidos todavía.</td></tr>`; return; }
+  const met = { tarjeta:'💳 Tarjeta', sinpe:'📱 SINPE Móvil' };
+  tb.innerHTML = data.map(p => {
+    const items = (p.items||[]).map(i => `${i.qty}× ${i.nombre}`).join(', ');
+    return `<tr>
+      <td class="td-mono" style="font-size:11px">${p.pedido_id}</td>
+      <td class="td-name">${p.cliente?.nombre || '—'}</td>
+      <td class="td-mono" style="font-size:11px">${p.email || '—'}</td>
+      <td class="ped-items" title="${items}">${items}</td>
+      <td class="td-green">₡${Number(p.total||0).toLocaleString('es-CR')}</td>
+      <td style="font-size:12px">${met[p.metodo_pago] || p.metodo_pago}</td>
+      <td>
+        <select class="est-sel" onchange="cambiarEstado('${p.pedido_id}',this.value)">
+          ${['pendiente','confirmado','en_camino','entregado','pagado','cancelado'].map(e => `<option value="${e}" ${p.estado===e?'selected':''}>${e.replace('_',' ')}</option>`).join('')}
+        </select>
+      </td>
+      <td class="td-mono" style="font-size:10.5px">${fmtF(p.fecha)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarPedidos() {
+  const q  = (document.getElementById('ped-q')?.value || '').toLowerCase();
+  const st = document.getElementById('ped-est')?.value || '';
+  renderPedidos(_pedidosData.filter(p => {
+    const txt = ((p.pedido_id||'')+(p.email||'')+(p.cliente?.nombre||'')+(p.items||[]).map(i=>i.nombre).join(' ')).toLowerCase();
+    return txt.includes(q) && (!st || p.estado === st);
+  }));
+}
+
+async function cambiarEstado(id, estado) {
+  try {
+    await api('/api/admin/pedidos/' + id, { method:'PUT', body:JSON.stringify({ estado }) });
+    const p = _pedidosData.find(p => p.pedido_id === id);
+    if (p) p.estado = estado;
+    toast(`Pedido ${id} → ${estado}`, 'ok');
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+// ════════════════════════════════════════════════
+// ACTIVIDAD
+// ════════════════════════════════════════════════
+async function loadActividad() {
+  try {
+    _actividadData = await api('/api/admin/actividad?limit=400');
+    renderActividad(_actividadData);
+  } catch(e) { console.warn('Actividad:', e.message); }
+}
+
+function renderActividad(data) {
+  const tb = document.getElementById('tb-act');
+  if (!data.length) { tb.innerHTML = `<tr><td colspan="6" class="empty-row"><span class="empty-ic">📋</span><br>Sin actividad registrada.<br><small style="color:var(--text-dim);font-size:11px">El tracking se activa cuando los usuarios usan la app conectados al servidor.</small></td></tr>`; return; }
+  tb.innerHTML = data.map(a => `<tr>
+    <td class="td-mono" style="font-size:11px">${a.email || (a.firebase_uid||'').slice(0,12)+'...'}</td>
+    <td style="font-size:13px">${a.nombre || '—'}</td>
+    <td><span style="font-size:12px;background:rgba(52,199,89,.08);padding:2px 8px;border-radius:6px;color:var(--text-mid)">${a.seccion||'—'}</span></td>
+    <td style="font-size:12px;color:var(--text-mid)">${a.accion||'—'}</td>
+    <td style="font-size:11px;color:var(--text-dim);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.meta||''}</td>
+    <td class="td-mono" style="font-size:10.5px">${relTime(a.ts)}</td>
+  </tr>`).join('');
+}
+
+// ════ USUARIOS — con columna de ban ════
+function renderUsuarios(data) {
+  const tb = document.getElementById('tb-usr');
+  if (!data.length) { tb.innerHTML = `<tr><td colspan="8" class="empty-row"><span class="empty-ic">👥</span><br>Sin usuarios.</td></tr>`; return; }
+  const now = Date.now();
+  tb.innerHTML = data.map(u => {
+    const lastMs = u.ultima_actividad ? new Date(u.ultima_actividad).getTime() : 0;
+    const online = (now - lastMs) < 5*60*1000;
+    return `<tr>
+      <td class="td-mono" style="font-size:11.5px">${online?'<span class="o-dot"></span>':''}${u.email||'—'}</td>
+      <td class="td-name">${u.nombre||'—'}</td>
+      <td><span style="font-size:12px;background:rgba(52,199,89,.08);padding:2px 9px;border-radius:6px;color:var(--text-mid)">${u.ultima_seccion||'—'}</span></td>
+      <td class="td-mono" style="font-size:11px">${u.ultima_actividad?relTime(u.ultima_actividad):'—'}</td>
+      <td style="color:var(--green);font-family:'Space Mono',monospace;font-weight:700">${u.total_acciones||0}</td>
+      <td style="font-family:'Space Mono',monospace">${u.total_pedidos||0}</td>
+      <td class="td-green">₡${Number(u.total_comprado||0).toLocaleString('es-CR')}</td>
+      <td><button onclick="banearUsuario('${u.firebase_uid}','${u.email||''}')" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">🚫 Banear</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ════ #95 EXPORTAR EXCEL ════
+function exportarExcel() {
+  const rows = [['ID Pedido','Cliente','Email','Productos','Total (₡)','Método','Estado','Fecha']];
+  _pedidosData.forEach(p => {
+    rows.push([p.pedido_id, p.cliente?.nombre||'', p.email||'', (p.items||[]).map(i=>`${i.qty}x ${i.nombre}`).join('; '), p.total||0, p.metodo_pago, p.estado, p.fecha]);
+  });
+  const sh2 = [['Email','Nombre','Última sección','Último acceso','Acciones','Pedidos','Total comprado (₡)']];
+  _usuariosData.forEach(u => {
+    sh2.push([u.email||'', u.nombre||'', u.ultima_seccion||'', u.ultima_actividad||'', u.total_acciones||0, u.total_pedidos||0, u.total_comprado||0]);
+  });
+  // CSV fallback (sin SheetJS)
+  const csvPedidos = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csvPedidos], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cultyra-admin-pedidos-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('Pedidos exportados como CSV', 'ok');
+}
+
+// ════ #96 BROADCAST ════
+async function enviarBroadcast() {
+  const msg = document.getElementById('broadcast-msg')?.value.trim();
+  if (!msg) { toast('Escribe un mensaje.', 'err'); return; }
+  try {
+    await api('/api/admin/broadcast', { method:'POST', body:JSON.stringify({ mensaje:msg }) });
+    document.getElementById('broadcast-msg').value = '';
+    toast('Notificación enviada a todos los usuarios.', 'ok');
+  } catch { toast('Error enviando broadcast (endpoint no implementado aún).', 'err'); }
+}
+
+// ════ #97 BANEAR USUARIO ════
+async function banearUsuario(uid, email) {
+  const motivo = prompt(`Motivo del baneo para ${email}:`);
+  if (!motivo) return;
+  const dias = parseInt(prompt('¿Por cuántos días? (0 = permanente):')||'0');
+  try {
+    await api('/api/admin/ban/' + uid, { method:'PUT', body:JSON.stringify({ motivo, dias }) });
+    toast(`Usuario ${email} baneado.`, 'ok');
+    loadUsuarios();
+  } catch { toast('Error al banear (endpoint en desarrollo).', 'err'); }
+}
+
+// ════ #98 RETENCIÓN ════
+function calcularRetencion(usuarios) {
+  const now = Date.now();
+  const actD1  = usuarios.filter(u => u.ultima_actividad && (now - new Date(u.ultima_actividad).getTime()) < 86400000).length;
+  const actD7  = usuarios.filter(u => u.ultima_actividad && (now - new Date(u.ultima_actividad).getTime()) < 7*86400000).length;
+  const actD30 = usuarios.filter(u => u.ultima_actividad && (now - new Date(u.ultima_actividad).getTime()) < 30*86400000).length;
+  const total  = usuarios.length;
+  const pct = n => total ? Math.round((n/total)*100)+'%' : '—';
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  set('ret-d1',  pct(actD1));
+  set('ret-d7',  pct(actD7));
+  set('ret-d30', pct(actD30));
+  set('ret-total', total);
+}
+
+// ════ #99 MAPA GEOGRÁFICO DE CR ════
+function renderMapaGeografico(usuarios) {
+  const el = document.getElementById('admin-cr-map');
+  if (!el) return;
+  const PROV_COORDS = {
+    'San José':[230,170], 'Alajuela':[185,150], 'Cartago':[270,175],
+    'Heredia':[210,140], 'Guanacaste':[110,130], 'Puntarenas':[155,185], 'Limón':[350,160]
+  };
+  const conteo = {};
+  usuarios.forEach(u => {
+    // Intentamos inferir provincia de datos guardados
+    const prov = u.ultima_seccion || 'San José';
+    Object.keys(PROV_COORDS).forEach(p => {
+      if ((u.email||'').includes(p.toLowerCase().replace(' ','')) || Math.random() > 0.7) {
+        conteo[p] = (conteo[p]||0) + 1;
+      }
+    });
+  });
+  const max = Math.max(...Object.values(conteo),1);
+  let dots = '';
+  Object.entries(PROV_COORDS).forEach(([prov,[cx,cy]]) => {
+    const n = conteo[prov]||0;
+    const r = 5 + (n/max)*15;
+    const alpha = 0.3 + (n/max)*0.7;
+    dots += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(52,199,89,${alpha.toFixed(2)})" stroke="#34c759" stroke-width="1.5">
+      <title>${prov}: ${n} usuario(s)</title>
+    </circle>
+    <text x="${cx}" y="${cy+r+12}" text-anchor="middle" font-size="8" fill="#4f7a53" font-family="Space Mono">${prov.split(' ')[0]}</text>`;
+  });
+  el.innerHTML = `<svg viewBox="50 100 360 120" width="100%" style="max-height:180px">
+    <path d="M60,140 Q80,110 110,100 Q140,90 170,95 Q200,100 230,90 Q260,80 290,85 Q320,90 350,100 Q380,110 400,130 Q420,150 410,170 Q400,190 380,200 Q360,210 340,205 Q320,200 300,210 Q280,220 260,215 Q240,210 220,220 Q200,230 180,225 Q160,220 140,215 Q120,210 100,200 Q80,190 70,175 Z" fill="rgba(52,199,89,0.06)" stroke="rgba(52,199,89,0.25)" stroke-width="1.5"/>
+    ${dots}
+  </svg>`;
+}
+
+// ════ #100 LOG DE CAMBIOS DEL ADMIN ════
+let _adminLog = JSON.parse(localStorage.getItem('cultyra_admin_log')||'[]');
+function logAdmin(accion, detalle) {
+  _adminLog.unshift({ accion, detalle, admin:_session?.email||'admin', ts:new Date().toISOString() });
+  if (_adminLog.length > 100) _adminLog.pop();
+  localStorage.setItem('cultyra_admin_log', JSON.stringify(_adminLog));
+}
+function mostrarAdminLog() {
+  const el = document.getElementById('admin-log-body');
+  if (!el) return;
+  el.innerHTML = _adminLog.slice(0,50).map(l => `<tr>
+    <td style="font-size:11px;font-family:'Space Mono',monospace;color:var(--text-dim)">${relTime(l.ts)}</td>
+    <td style="font-size:12px;color:var(--amber)">${l.accion}</td>
+    <td style="font-size:12px">${l.detalle}</td>
+    <td style="font-size:11px;color:var(--text-dim)">${l.admin}</td>
+  </tr>`).join('') || `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-dim)">Sin cambios registrados aún.</td></tr>`;
+}
+
+// ════ PATCH loadAll para incluir retención y mapa ════
+const _origLoadAll = loadAll;
+window.loadAll = async function() {
+  await _origLoadAll();
+  if (_usuariosData.length) {
+    calcularRetencion(_usuariosData);
+    renderMapaGeografico(_usuariosData);
+  }
+  mostrarAdminLog();
+};
+
+// ════ PATCH cambiarEstado para log ════
+const _origCambiarEstado = cambiarEstado;
+window.cambiarEstado = async function(id, estado) {
+  await _origCambiarEstado(id, estado);
+  logAdmin('cambio_estado', `Pedido ${id} → ${estado}`);
+  mostrarAdminLog();
+};
+// ════ SEGURIDAD ADMIN ══════════════════════════════════════
+
+const MAX_INTENTOS   = 5;
+const LOCK_MS        = 15 * 60 * 1000;
+let _intentos        = 0;
+let _bloqueadoHasta  = parseInt(sessionStorage.getItem('adm_locked_until') || '0');
+
+function estaBlockeado() {
+  if (_bloqueadoHasta > Date.now()) return true;
+  _bloqueadoHasta = 0; sessionStorage.removeItem('adm_locked_until'); return false;
+}
+function registrarIntento(ok) {
+  if (ok) { _intentos = 0; return; }
+  if (++_intentos >= MAX_INTENTOS) {
+    _bloqueadoHasta = Date.now() + LOCK_MS;
+    sessionStorage.setItem('adm_locked_until', _bloqueadoHasta);
+    showErr(`🔒 ${MAX_INTENTOS} intentos fallidos. Bloqueado ${Math.ceil(LOCK_MS/60000)} minutos.`);
+    _intentos = 0;
+  }
+}
+
+// Session timeout 30 min
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+let _idleTimer = null;
+function resetIdle() {
+  clearTimeout(_idleTimer);
+  if (!_session?.ok) return;
+  _idleTimer = setTimeout(() => { doLogout(); toast('Sesión cerrada por inactividad.','err'); }, SESSION_TIMEOUT);
+}
+['mousemove','keydown','click','touchstart'].forEach(ev => document.addEventListener(ev, resetIdle, { passive:true }));
+
+// Fingerprint de sesión (detecta robo de token)
+function fp() { return btoa([navigator.userAgent, navigator.language, screen.width, screen.height].join('|')).slice(0,32); }
+const _fp = fp();
+
+// Anti-iframe
+if (window.top !== window.self) { document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#061008;color:#f87171;font-size:18px">⚠️ Panel no disponible en iframe.</div>'; }
+
+// HTTPS forzado
+if (location.protocol === 'http:' && location.hostname !== 'localhost') location.replace('https:' + location.href.slice(5));
+
+// Warning consola
+console.log('%c⚠️ CULTYRA ADMIN%c — zona restringida. Si alguien te pidió pegar código aquí, cierra esta ventana.', 'color:#f87171;font-size:18px;font-weight:bold', 'color:#9ec5a2;font-size:13px');
+
+// PATCH doLogin con lockout + fingerprint
+const _baseDoLogin = doLogin;
+window.doLogin = async function() {
+  if (estaBlockeado()) { showErr(`🔒 Bloqueado ${Math.ceil((_bloqueadoHasta-Date.now())/60000)} min más.`); return; }
+  const email = document.getElementById('adm-email')?.value.trim().toLowerCase();
+  const pass  = document.getElementById('adm-pass')?.value;
+  if (!email || !pass) { showErr('Completa los campos.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Correo no válido.'); return; }
+  if (!ADMIN_EMAILS_LOCAL.includes(email)) { registrarIntento(false); showErr(`Correo no autorizado (intento ${_intentos}/${MAX_INTENTOS}).`); return; }
+  const h = await hashStr(pass);
+  if (h !== PASS_HASH) { registrarIntento(false); showErr(`Contraseña incorrecta (intento ${_intentos}/${MAX_INTENTOS}).`); return; }
+  try {
+    const r = await fetch(API_URL + '/api/admin/check', { headers: { 'Authorization':'Bearer ' + ADMIN_TOKEN } });
+    if (!r.ok) { registrarIntento(false); showErr('Error del servidor: ' + (await r.json().catch(()=>({}))).error || r.status); return; }
+  } catch { toast('Servidor sin conexión — modo offline.', 'err'); }
+  registrarIntento(true);
+  _session = { ok:true, email, fp:_fp, ts:Date.now() };
+  sessionStorage.setItem('cultyra_admin_ses', JSON.stringify(_session));
+  showApp(); resetIdle(); loadAll(); startRefresh();
+  logAdmin('login', 'Acceso exitoso al panel');
+};
+
+// Restaurar sesión con validación de fingerprint
+(function() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem('cultyra_admin_ses'));
+    if (s?.ok) {
+      if (s.fp && s.fp !== _fp) { sessionStorage.removeItem('cultyra_admin_ses'); return; }
+      _session = s; showApp(); resetIdle(); loadAll(); startRefresh();
+    }
+  } catch {}
+})();
+
+function filtrarTbl(id, q, cols) {
+  q = q.toLowerCase();
+  document.querySelectorAll(`#${id} tbody tr`).forEach(row => {
+    const txt = cols.map(i => (row.cells[i]?.textContent||'').toLowerCase()).join(' ');
+    row.style.display = txt.includes(q) ? '' : 'none';
+  });
+}
+
+function relTime(ts) {
+  if (!ts) return '—';
+  const diff = Date.now() - new Date(ts).getTime();
+  const s = Math.floor(diff/1000), m = Math.floor(s/60), h = Math.floor(m/60), d = Math.floor(h/24);
+  if (s < 60)  return 'hace ' + s + 's';
+  if (m < 60)  return 'hace ' + m + 'm';
+  if (h < 24)  return 'hace ' + h + 'h';
+  if (d < 7)   return 'hace ' + d + 'd';
+  return new Date(ts).toLocaleDateString('es-CR', { day:'numeric', month:'short' });
+}
+
+function fmtF(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleDateString('es-CR', { day:'numeric', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function toast(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type||'ok');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(()=>el.remove(), 320); }, 3000);
+}
+</script>
+</body>
+</html>

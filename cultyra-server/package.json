@@ -1,0 +1,16 @@
+{
+  "name": "cultyra-server",
+  "version": "2.0.0",
+  "description": "Servidor de sincronización de datos de Cultyra (auth vía Firebase)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.0",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

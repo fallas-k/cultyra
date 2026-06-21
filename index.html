@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Cultyra">
   <link rel="icon" href="img/logo.png">
-  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
 
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,15 +21,12 @@
   <!-- Mapas (Leaflet) y PDF (jsPDF) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
-  <!-- Leaflet plugins extras -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- Estilos de Cultyra -->
-  <link rel="stylesheet" href="css/styles.css?v=6">
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
 
@@ -193,7 +190,7 @@
   <div class="landing-footer">
     <div class="links">
       <a href="mailto:soportecultyra@gmail.com">📧 soportecultyra@gmail.com</a>
-      <a href="https://wa.me/50662053039" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a href="https://wa.me/50688889999" target="_blank" rel="noopener">💬 WhatsApp</a>
       <a href="#" onclick="goToLogin();return false;">🔑 Iniciar Sesión</a>
     </div>
     <p data-i18n="footer-p">CULTYRA · Proyecto STEAM · CTP José Figueres Ferrer · Costa Rica 🇨🇷 · 2026</p>
@@ -327,6 +324,7 @@
       <button class="nav-btn" onclick="showSection('informacion', this); toggleNavMenu()">Información</button>
       <button class="nav-btn" onclick="showSection('cultivo', this); toggleNavMenu()">Mi Cultivo</button>
       <button class="nav-btn" onclick="showSection('clima', this); toggleNavMenu()">Clima</button>
+      <button class="nav-btn" onclick="showSection('sensores', this); toggleNavMenu()">Sensores</button>
       <button class="nav-btn" onclick="showSection('empleados', this); toggleNavMenu()">Empleados</button>
       <button class="nav-btn" onclick="showSection('registros', this); toggleNavMenu()">Registros</button>
       <button class="nav-btn" onclick="showSection('calendario', this); toggleNavMenu()">Calendario</button>
@@ -532,14 +530,7 @@
         </div>
         <button class="btn-primary" onclick="openFincaModal()">+ Agregar Finca</button>
       </div>
-      <div id="mapa-general-wrap" style="position:relative">
-        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-          <input id="map-search-input" type="text" placeholder="🔍 Buscar lugar en el mapa..." style="flex:1;min-width:180px;background:rgba(255,255,255,0.07);border:1px solid rgba(52,199,89,0.3);color:#e0f0e4;border-radius:10px;padding:8px 14px;font-size:13px" onkeydown="if(event.key==='Enter')buscarEnMapa()">
-          <button onclick="buscarEnMapa()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap">Buscar</button>
-          <button onclick="centrarEnMiUbicacion()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer" title="Mi ubicación">📍</button>
-        </div>
-        <div id="mapa-general"></div>
-      </div>
+      <div id="mapa-general"></div>
       <div class="fincas-grid" id="fincas-grid">
         <!-- populated by JS -->
       </div>
@@ -591,17 +582,12 @@
           <input type="hidden" id="finca-ubicacion">
         </div>
         <div class="modal-group"><label>Seleccione el área de su terreno en el mapa 🗺️</label>
-          <div style="display:flex;gap:6px;margin-bottom:6px">
-            <input id="finca-map-search" type="text" placeholder="🔍 Buscar lugar..." style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(52,199,89,0.3);color:#e0f0e4;border-radius:8px;padding:6px 12px;font-size:12px" onkeydown="if(event.key==='Enter')buscarEnMapaFinca()">
-            <button onclick="buscarEnMapaFinca()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">Ir</button>
-            <button onclick="centrarFincaEnUbicacion()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer" title="Mi ubicación">📍</button>
-          </div>
           <div id="finca-map"></div>
           <div class="map-botones">
             <button type="button" id="btn-dibujar" onclick="empezarDibujo()">⬠ Dibujar terreno</button>
             <button type="button" id="btn-borrar-dibujo" onclick="borrarDibujo()">🗑️ Borrar</button>
           </div>
-          <div class="map-hint">1) Ubique su zona con los menús de arriba o busque · 2) Presione "Dibujar terreno" y marque las esquinas · 3) Cierre tocando el primer punto. El área se calcula sola.</div>
+          <div class="map-hint">1) Ubique su zona con los menús de arriba · 2) Presione "Dibujar terreno" y marque las esquinas · 3) Cierre tocando el primer punto. El área se calcula sola.</div>
         </div>
         <div class="modal-fila">
         <div class="modal-group"><label>Área (hectáreas)</label><input type="number" id="finca-area" placeholder="Se calcula al dibujar" step="0.01"></div>
@@ -635,28 +621,20 @@
   <section id="ia" class="section">
     <div class="ia-container">
       <div class="ia-header">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <div class="ia-badge">IA Activa – CultIA</div>
-          <button onclick="nuevaConversacionIA()" style="background:none;border:1px dashed rgba(52,199,89,0.5);color:var(--green-mid);border-radius:999px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">🔄 Nueva conversación</button>
-        </div>
+        <div class="ia-badge">IA Activa – Cultyra Assistant</div>
         <h2>Asistente de Cultivo IA</h2>
         <p>Consulta sobre plagas, enfermedades, fertilizantes biodegradables y más.</p>
       </div>
       <div class="ia-suggestions" id="ia-suggestions">
         <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🐛 ¿Cómo combatir pulgones?</span>
         <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🍅 Mi tomate tiene manchas amarillas</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">☕ Plagas del café en Costa Rica</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🫘 Enfermedades del frijol</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🌽 Gusano cogollero en maíz</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🍌 Sigatoka negra en banano</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🌿 Control de hongos en lechuga</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🥕 Nematodos en zanahoria</span>
-        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🍓 Botrytis en fresa</span>
         <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🌱 Abonos biodegradables para café</span>
+        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">💧 Frecuencia de riego ideal</span>
+        <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🌿 Control de hongos en lechuga</span>
       </div>
       <div class="chat-messages" id="chat-messages">
         <div class="msg assistant">
-          <div class="msg-bubble">¡Hola! Soy CultIA, el asistente inteligente de Cultyra 🌱. Puedo ayudarte con recomendaciones sobre plagas, enfermedades, productos biodegradables y el cuidado de tus cultivos. ¿En qué puedo ayudarte hoy?</div>
+          <div class="msg-bubble">¡Hola! Soy el asistente inteligente de Cultyra 🌱. Puedo ayudarte con recomendaciones sobre plagas, enfermedades, productos biodegradables y el cuidado de tus cultivos. ¿En qué puedo ayudarte hoy?</div>
           <span class="msg-time">Ahora</span>
         </div>
         <div class="typing-indicator" id="typing">
@@ -667,11 +645,8 @@
       </div>
       <div class="ia-chips">
         <button class="ia-chip" onclick="preguntaRapida('¿Debería regar hoy mi cultivo según el clima?')">💧 ¿Riego hoy?</button>
-        <button class="ia-chip" onclick="preguntaRapida('¿Cuáles son las plagas más comunes del tomate y cómo las controlo con productos biodegradables?')">🍅 Plagas del tomate</button>
-        <button class="ia-chip" onclick="preguntaRapida('¿Cuáles son las plagas más comunes del café en Costa Rica y cómo las controlo?')">☕ Plagas del café</button>
+        <button class="ia-chip" onclick="preguntaRapida('¿Cuáles son las plagas más comunes de la papa y cómo las controlo?')">🐛 Plagas de la papa</button>
         <button class="ia-chip" onclick="preguntaRapida('¿Cuándo y con qué debo fertilizar mi cultivo?')">🌱 ¿Cuándo fertilizo?</button>
-        <button class="ia-chip" onclick="preguntaRapida('¿Cómo controlo el gusano cogollero en maíz con productos biodegradables?')">🌽 Cogollero del maíz</button>
-        <button class="ia-chip" onclick="preguntaRapida('¿Qué productos de Cultyra me recomiendas para control de hongos?')">🍄 Control de hongos</button>
         <button class="ia-chip" onclick="preguntaRapida('¿Cómo protejo mi cultivo de una helada?')">❄️ Protección de heladas</button>
         <button class="ia-chip" onclick="preguntaRapida('¿Qué cultivo me recomiendas para zonas altas de Costa Rica?')">⛰️ Cultivos de altura</button>
       </div>
@@ -723,8 +698,8 @@
           <div class="ayuda-icon">📱</div>
           <h3>Soporte Telefónico</h3>
           <p>Llámanos en horario hábil. También disponible por WhatsApp para consultas rápidas de campo.</p>
-          <a href="tel:+50662053039">+506 6205-3039</a><br>
-          <a href="https://wa.me/50662053039" style="margin-top:6px;display:block;">WhatsApp: +506 6205-3039</a>
+          <a href="tel:+50622223333">+506 2222-3333</a><br>
+          <a href="https://wa.me/50688889999" style="margin-top:6px;display:block;">WhatsApp: +506 8888-9999</a>
         </div>
         <div class="ayuda-card">
           <div class="ayuda-icon">🧑‍🌾</div>
@@ -788,7 +763,6 @@
         <h2>Cosechas, ventas y gastos</h2>
         <p>Anota lo que cosechas, vendes y gastas para saber cuánto gana tu finca.</p>
       </div>
-      <div id="reg-filtros" style="margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
       <div class="reg-form">
         <div><label>Finca</label><select id="reg-finca"></select></div>
         <div><label>Tipo</label>
@@ -990,9 +964,7 @@
           </select>
         </div>
         <div><label>Teléfono</label><input type="tel" id="emp-tel" placeholder="+506 0000-0000"></div>
-        <div><label>Correo del empleado</label><input type="email" id="emp-email" placeholder="empleado@correo.com"></div>
-        <div><label>Contraseña temporal</label><input type="text" id="emp-pass" placeholder="Mínimo 6 caracteres" autocomplete="off"></div>
-        <button id="btn-add-emp" onclick="addEmpleado()">+ Agregar y crear cuenta</button>
+        <button id="btn-add-emp" onclick="addEmpleado()">+ Agregar</button>
       </div>
       <div class="empleados-grid" id="empleados-grid"></div>
     </div>
@@ -1047,7 +1019,7 @@
   </div>
 
   <!-- WHATSAPP FLOTANTE -->
-  <a id="btn-wa" href="https://wa.me/50662053039?text=Hola%20Cultyra%2C%20necesito%20ayuda%20con%20mi%20finca%20%F0%9F%8C%B1" target="_blank" rel="noopener" title="Escríbenos por WhatsApp">💬</a>
+  <a id="btn-wa" href="https://wa.me/50688889999?text=Hola%20Cultyra%2C%20necesito%20ayuda%20con%20mi%20finca%20%F0%9F%8C%B1" target="_blank" rel="noopener" title="Escríbenos por WhatsApp">💬</a>
 
   <!-- CART MODAL -->
   <div class="modal-overlay" id="cart-modal">
@@ -1082,19 +1054,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script>
     firebase.initializeApp({
-      apiKey:            "AIzaSyA1TjLsPlUA7xgszVoqcCGlBcyRnjYA6Ls",
-      authDomain:        "cultyraagro.firebaseapp.com",
-      projectId:         "cultyraagro",
-      storageBucket:     "cultyraagro.firebasestorage.app",
-      messagingSenderId: "827021218939",
-      appId:             "1:827021218939:web:9b0edf83aa191362367ede"
+      apiKey:            "AIzaSyAMCLoZZDHbAhnjI--ufvSsd8EHFtpQSMs",
+      authDomain:        "cultyraagr.firebaseapp.com",
+      projectId:         "cultyraagr",
+      storageBucket:     "cultyraagr.firebasestorage.app",
+      messagingSenderId: "162025634494",
+      appId:             "1:162025634494:web:6207435692980db075bcef"
     });
-  </script>
-
-  <!-- URL del backend (cultyra-server). Cámbiala por la URL real de tu
-       servidor desplegado en Render (ver cultyra-server/DESPLIEGUE.txt) -->
-  <script>
-    const API_URL = 'https://cultyra-server.onrender.com';
   </script>
 
   <!-- ======================== -->

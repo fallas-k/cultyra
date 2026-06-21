@@ -1,0 +1,46 @@
+CULTYRA — Cómo subir el servidor a internet (gratis)
+=====================================================
+
+Mientras el servidor corre en "localhost", la sincronización solo funciona en
+tu computadora. Para que funcione desde cualquier teléfono, hay que subirlo.
+Aquí la forma más fácil, con RENDER (gratis):
+
+OPCIÓN A — RENDER.COM (recomendado, gratis)
+-------------------------------------------
+1. Crea una cuenta en https://render.com (con tu correo o GitHub).
+2. Sube la carpeta "cultyra-server" a un repositorio de GitHub.
+   (En VS Code: Control de código fuente → Publicar en GitHub)
+3. En Render: New + → Web Service → conecta tu repositorio.
+4. Configuración:
+      Build Command:  npm install
+      Start Command:  npm start
+      Instance Type:  Free
+5. En "Environment" agrega las variables:
+      FIREBASE_PROJECT_ID = cultyraagro
+      ANTHROPIC_API_KEY   = sk-ant-xxxx      (tu clave de console.anthropic.com)
+6. Deploy. Render te dará una URL como:
+      https://cultyra-server.onrender.com
+7. En el archivo public/index.html de la app, cambia esta línea (cerca del
+   inicializeApp de Firebase):
+      const API_URL = 'https://cultyra-server.onrender.com';
+   por tu URL real de Render.
+8. Vuelve a desplegar la app (Firebase) y ¡listo! Funciona desde cualquier
+   teléfono del mundo.
+
+NOTA sobre la base de datos en Render (plan gratis):
+   El plan gratis reinicia el disco cada cierto tiempo, así que el archivo
+   cultyra.db puede borrarse. Para datos permanentes:
+   - Usa un "Disk" persistente en Render (ajuste de pago), O
+   - Cambia a una base de datos PostgreSQL gratis de Render (avísame y te
+     adapto el server.js), O
+   - Para la expo, el plan gratis funciona perfecto durante la demostración.
+
+OPCIÓN B — RAILWAY.APP (alternativa, también gratis al inicio)
+--------------------------------------------------------------
+Similar a Render: conectas GitHub, detecta Node, pones JWT_SECRET y deploy.
+
+IMPORTANTE — CORS
+   El server.js ya tiene CORS abierto (app.use(cors())), así que acepta
+   llamadas desde tu dominio de Firebase sin configuración extra.
+
+SOPORTE: soportecultyra@gmail.com

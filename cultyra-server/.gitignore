@@ -1,0 +1,4 @@
+node_modules
+cultyra.db
+*.log
+package-lock.json

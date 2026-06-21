@@ -7,8 +7,14 @@
   "background_color": "#1a3a1f",
   "theme_color": "#1a3a1f",
   "lang": "es-CR",
+  "shortcuts": [
+    { "name": "Mis Fincas", "short_name": "Fincas", "description": "Ver mapa y gestionar fincas", "url": "./index.html#cultivo", "icons": [{"src": "img/icon-192.png", "sizes": "192x192"}] },
+    { "name": "Clima", "short_name": "Clima", "description": "Pronóstico en tiempo real", "url": "./index.html#clima", "icons": [{"src": "img/icon-192.png", "sizes": "192x192"}] },
+    { "name": "CultIA", "short_name": "IA", "description": "Consultar al agrónomo IA", "url": "./index.html#ia", "icons": [{"src": "img/icon-192.png", "sizes": "192x192"}] },
+    { "name": "Registros", "short_name": "Finanzas", "description": "Ver cosechas y ventas", "url": "./index.html#registros", "icons": [{"src": "img/icon-192.png", "sizes": "192x192"}] }
+  ],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

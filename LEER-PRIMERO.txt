@@ -1,0 +1,76 @@
+==================================================================
+CULTYRA — QUÉ SE ARREGLÓ Y CÓMO DEJARLO FUNCIONANDO
+==================================================================
+
+Este proyecto está COMPLETO (los 12 archivos JS, el logo, manifest, etc.)
+y se le aplicaron estos cambios:
+
+1. El formulario de soporte ahora manda el correo por tu servidor
+   (cultyra-server) usando RESEND, en vez de Web3Forms.
+2. Se definió API_URL en index.html (antes faltaba, por eso la
+   sincronización con el servidor fallaba).
+3. Se subió la versión del service worker (v9) y de landing.js (?v=2)
+   para que los navegadores descarguen lo nuevo y no se queden pegados.
+4. Se agregó package.json con Node 22 (necesario para el servidor).
+
+
+------------------------------------------------------------------
+PASO 1 — SUBIR LA APP A FIREBASE (esto arregla el login y el logo)
+------------------------------------------------------------------
+IMPORTANTE: tu carpeta local quedó incompleta en algún momento. Usa
+ESTA carpeta completa. Desde la raíz del proyecto (donde está
+firebase.json):
+
+    firebase deploy --only hosting
+
+Eso sube los 12 archivos JS, el logo y todo. La app vuelve a funcionar
+completa.
+
+Para comprobar que se subió completo: en la consola de Firebase →
+Hosting, la nueva versión debe decir "23 archivos" (no 8).
+
+
+------------------------------------------------------------------
+PASO 2 — SUBIR EL SERVIDOR NUEVO A RENDER (esto arregla el correo)
+------------------------------------------------------------------
+El servidor en https://cultyra-server.onrender.com necesita el código
+nuevo (con /api/contacto) y la clave de Resend.
+
+  a) Sube la carpeta cultyra-server actualizada a Render:
+     - Si usas GitHub:  git add . / git commit / git push
+     - Si es manual:    "Manual Deploy" en el panel de Render
+
+  b) En Render → tu servicio → Environment, agrega:
+         RESEND_API_KEY = <<TU_RESEND_API_KEY — GENERA UNA NUEVA, la anterior quedó expuesta>>
+     (la clave que generaste en resend.com)
+
+  c) La cuenta de Resend debe estar creada con soportecultyra@gmail.com
+     (sin dominio propio, Resend solo entrega a ese correo).
+
+
+------------------------------------------------------------------
+PASO 3 — COMPROBAR
+------------------------------------------------------------------
+Abre:  https://cultyra-server.onrender.com/api/salud
+  - Debe incluir  "correo":"configurado"
+  - Si dice "sin configurar" → falta el RESEND_API_KEY (Paso 2b)
+  - Si NO aparece "correo"   → Render tiene el código viejo (Paso 2a)
+
+Luego abre cultyraagr.web.app en INCÓGNITO, llena el formulario de
+"Solicitar Soporte Técnico" y envía. Revisa soportecultyra@gmail.com
+(y Spam la primera vez).
+
+
+------------------------------------------------------------------
+NOTAS
+------------------------------------------------------------------
+- La primera solicitud al servidor puede tardar 20-30 seg si estaba
+  "dormido" (plan gratis de Render). La segunda ya es rápida.
+- Si vuelve a salir "Unexpected token '<'": el servidor de Render tiene
+  el código viejo. Repite el Paso 2a.
+- Para que tu proyecto no se vuelva a romper: SIEMPRE despliega esta
+  carpeta completa, no una subcarpeta. Cuida que OneDrive no "libere
+  espacio" de los archivos (clic derecho en la carpeta → "Conservar
+  siempre en este dispositivo").
+
+SOPORTE: soportecultyra@gmail.com

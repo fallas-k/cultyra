@@ -1,0 +1,50 @@
+CULTYRA — Servidor de sincronización (v2.0 con Firebase Auth)
+=============================================================
+
+¿QUÉ HACE ESTE SERVIDOR?
+  Solo sincroniza datos (fincas, tareas, registros) entre dispositivos.
+  El registro, login y recuperación de contraseña los maneja Firebase
+  Authentication directamente en el navegador — sin pasar por aquí.
+
+  Ventaja: el servidor puede estar dormido (plan gratis de Render) y
+  los usuarios igual pueden registrarse e iniciar sesión sin problemas.
+
+ARCHIVOS
+  server.js    → Servidor (sync + IA, verifica tokens de Firebase)
+  schema.sql   → Esquema SQL (compatible con MySQL/XAMPP)
+  package.json → Dependencias (express, cors, jsonwebtoken)
+  cultyra.db   → Base de datos SQLite (se crea sola al iniciar)
+
+CÓMO INICIARLO (requiere Node.js 22 o superior)
+  1. cd cultyra-server
+  2. npm install
+  3. FIREBASE_PROJECT_ID=cultyraagro ANTHROPIC_API_KEY=sk-ant-xxxx npm start
+  → Servidor en http://localhost:3000
+
+VARIABLES DE ENTORNO NECESARIAS EN RENDER
+  FIREBASE_PROJECT_ID = cultyraagro
+  (se ve en Firebase Console → Configuración del proyecto → ID del proyecto)
+  ANTHROPIC_API_KEY = sk-ant-xxxx
+  (clave de la API de Anthropic, desde console.anthropic.com → API Keys.
+   NUNCA pongas esta clave en el frontend/index.html — solo aquí, como
+   variable de entorno del servidor.)
+  Ya NO se necesita JWT_SECRET ni nada más.
+
+ENDPOINTS
+  GET  /api/datos          → carga datos del usuario
+  PUT  /api/datos          → guarda datos del usuario
+  GET  /api/registros      → lista registros contables
+  POST /api/registros      → crea registro
+  PUT  /api/registros/:id  → edita registro
+  DELETE /api/registros/:id → elimina registro
+  POST /api/ia             → chat con CultIA (requiere token de Firebase,
+                              límite de 30 mensajes/hora por usuario)
+  GET  /api/salud          → estado del servidor (incluye si la IA está
+                              configurada)
+
+CÓMO CONFIGURAR FIREBASE AUTH (hacer una sola vez)
+  1. Firebase Console → Authentication → Método de acceso
+  2. Activar "Correo electrónico/contraseña" → Guardar
+  3. ¡Listo! Los usuarios ya pueden registrarse desde la app.
+
+SOPORTE: soportecultyra@gmail.com

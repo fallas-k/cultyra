@@ -15,9 +15,30 @@ function showSection(id, btn) {
   if(id === 'calendario') renderCalendario();
   if(id === 'comparar') renderComparar();
   if(id === 'cultivo') renderBitacora();
+  if(id === 'ia') { if(typeof initIASection === 'function') initIASection(); }
+  if(id === 'informacion') {
+    if(!_faqInit && typeof renderFAQ === 'function') { renderFAQ(); _faqInit = true; }
+    if(typeof actualizarStatsInfo === 'function') actualizarStatsInfo();
+  }
 }
 
 // ===== UTILIDADES =====
+// Ir a una sección de la app (alias de showSection sin botón activo)
+function irA(id) {
+  const btnMap = { 'clima': 3, 'cultivo': 2, 'empleados': 4, 'registros': 5, 'ia': 8, 'productos': 9, 'calendario': 6, 'dashboard': 0 };
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const idx = btnMap[id];
+  const btn = idx !== undefined ? navBtns[idx] : null;
+  showSection(id, btn);
+}
+
+// Scroll suave en la landing page
+function landingScroll(id) {
+  event.preventDefault();
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function fechaRelativa(fechaStr) {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   const fecha = new Date(fechaStr + 'T12:00'); fecha.setHours(0,0,0,0);
@@ -88,11 +109,11 @@ function animarNumero(el, hasta, sufijo) {
 
 // ===== ONBOARDING (tour de bienvenida) =====
 const ONB_PASOS = [
-  {icon:'🌱', titulo:'¡Bienvenido a Cultyra!', texto:'Tu finca, tu equipo y el clima, todo en un solo lugar. Te mostramos lo esencial en 4 pasos rápidos.'},
-  {icon:'🗺️', titulo:'1 · Dibuja tu finca', texto:'En "Mi Cultivo" → Agregar Finca: elige provincia, cantón y distrito, y dibuja tu terreno en el mapa. Las hectáreas se calculan solas.'},
-  {icon:'🌦️', titulo:'2 · Revisa el clima', texto:'En "Clima" verás el pronóstico hora a hora de tu finca y recibirás alertas de helada o lluvia fuerte en tu Inicio.'},
-  {icon:'👷', titulo:'3 · Asigna tareas', texto:'Registra a tus empleados y reparte el trabajo. Con el "Plan de cultivo" las etapas se generan automáticamente con fechas.'},
-  {icon:'💰', titulo:'4 · Anota cosechas y gastos', texto:'En "Registros" lleva el control de kilos cosechados, ventas y gastos para saber cuánto está ganando tu finca. ¡Listo para empezar!'}
+  {icon:'🌱', titulo:'¡Bienvenido a Cultyra!', texto:'Tu asistente agronómico digital. En 3 pasos rápidos te mostramos cómo sacarle el máximo provecho desde el primer día.'},
+  {icon:'🗺️', titulo:'Paso 1 · Agrega tu primera finca', texto:'Ve a "Mi Cultivo" → "Agregar Finca". Buscá tu zona en el mapa satelital, dibujá el contorno de tu terreno y el sistema calcula las hectáreas automáticamente.'},
+  {icon:'🤖', titulo:'Paso 2 · Consultá a CultIA', texto:'Tocá el botón 💬 en cualquier momento para hablar con CultIA, tu agrónomo IA disponible 24/7. Preguntale sobre plagas, enfermedades, fertilización o cualquier problema de tu cultivo.'},
+  {icon:'💰', titulo:'Paso 3 · Anotá cosechas y gastos', texto:'En "Registros" llevá el control de lo que cosechás, vendés y gastás. Con los gráficos verás en segundos si tu finca está siendo rentable.'},
+  {icon:'🚀', titulo:'¡Listo para cultivar con tecnología!', texto:'Ya sabés lo esencial. Recordá que podés contactarnos por WhatsApp al +506 6205-3039 o preguntarle directamente a CultIA cualquier duda agronómica.'},
 ];
 let onbPaso = 0;
 function mostrarOnboarding() {
@@ -275,4 +296,114 @@ function buscarGlobal(q) {
 document.addEventListener('click', (e) => {
   const bg = document.querySelector('.buscador-global');
   if (bg && !bg.contains(e.target)) { const r = document.getElementById('buscador-res'); if (r) r.classList.remove('open'); }
+});
+
+// ===== FAQ ACORDEÓN =====
+const FAQ_ITEMS = [
+  { q: "¿Cultyra es completamente gratis?", a: "El plan básico es 100% gratuito y siempre lo será. Incluye gestión de fincas, clima, tareas, empleados, registros contables y acceso a CultIA. Los planes de pago (₡25.000/mes o ₡180.000/año) ofrecen reportes automáticos, monitoreo IoT y visitas técnicas." },
+  { q: "¿Necesito instalar algo en mi celular?", a: "No. Cultyra es una PWA (aplicación web progresiva). Entrás desde Chrome o Safari en cultyraagro.web.app y la app funciona como si fuera nativa. Podés instalarla en la pantalla de inicio con 'Agregar a pantalla de inicio' pero no es obligatorio." },
+  { q: "¿Mis datos de finca están seguros?", a: "Sí. Los datos se almacenan con cifrado TLS 1.3 en servidores de Google Cloud (Firebase) y Railway. Solo vos podés acceder a tus datos. Nunca compartimos información con terceros. Podés leer nuestra política de privacidad completa al final de esta página." },
+  { q: "¿Funciona sin internet?", a: "Cultyra tiene modo offline básico mediante Service Worker. Podés ver la información ya cargada sin internet. Sin embargo, las funciones de sincronización, clima en tiempo real y CultIA requieren conexión a internet." },
+  { q: "¿Cómo agrego a mis empleados?", a: "En la sección 'Empleados' → '+ Agregar empleado'. Completás sus datos, y si querés que accedan a la app, agregás su correo y una contraseña temporal. El empleado puede entrar con esas credenciales y verá sus tareas asignadas, el clima y CultIA — sin acceso a tus registros financieros." },
+  { q: "¿Qué cultivos conoce la IA (CultIA)?", a: "CultIA está especializada en los cultivos más comunes de Costa Rica: tomate, maíz, frijol, café, banano, plátano, piña, cacao, aguacate, cítricos, fresa, zanahoria, brócoli, repollo, lechuga, chile, pepino, cebolla y más. También conoce los 30 productos del catálogo Cultyra." },
+  { q: "¿Cómo funciona el mapa de fincas?", a: "En 'Mi Cultivo' → '+ Agregar Finca' se abre un mapa satelital de Esri. Buscás tu zona con la barra de búsqueda, presionás 'Dibujar terreno' y marcás las esquinas de tu finca. El sistema calcula las hectáreas automáticamente." },
+  { q: "¿Puedo tener varias fincas?", a: "Sí, podés agregar todas las fincas que necesitás. Cada finca tiene su propio cultivo, ubicación, tareas y datos de clima. En el mapa general se ven todas con colores diferentes." },
+  { q: "¿Cómo compro los productos?", a: "En la sección 'Productos' añadís artículos al carrito y al finalizar la compra se genera un mensaje de WhatsApp con tu pedido completo, listo para enviar a Cultyra directamente al +506 6205-3039." },
+  { q: "¿Cómo contacto soporte?", a: "Podés escribirnos por WhatsApp al +506 6205-3039, por correo a soportecultyra@gmail.com, o usar el botón flotante 💬 de la app. También podés consultar a CultIA, disponible las 24 horas." },
+];
+
+function renderFAQ() {
+  const container = document.getElementById('faq-list');
+  if (!container) return;
+  container.innerHTML = FAQ_ITEMS.map((item, i) => `
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <button onclick="toggleFAQ(${i})" id="faq-btn-${i}" style="width:100%;text-align:left;background:none;border:none;padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:'DM Sans',sans-serif">
+        <span style="font-size:14px;font-weight:600;color:var(--text-dark)">${item.q}</span>
+        <span id="faq-icon-${i}" style="font-size:18px;color:var(--green-bright);flex-shrink:0;transition:transform .25s">+</span>
+      </button>
+      <div id="faq-body-${i}" style="display:none;padding:0 20px 16px">
+        <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin:0">${item.a}</p>
+      </div>
+    </div>`).join('');
+}
+
+function toggleFAQ(i) {
+  const body = document.getElementById('faq-body-' + i);
+  const icon = document.getElementById('faq-icon-' + i);
+  const open = body.style.display === 'block';
+  // Cerrar todos
+  FAQ_ITEMS.forEach((_, j) => {
+    document.getElementById('faq-body-' + j).style.display = 'none';
+    document.getElementById('faq-icon-' + j).style.transform = '';
+    document.getElementById('faq-icon-' + j).textContent = '+';
+  });
+  if (!open) {
+    body.style.display = 'block';
+    icon.style.transform = 'rotate(45deg)';
+    icon.textContent = '+';
+  }
+}
+
+// ===== ESTADÍSTICAS REALES DE LA SECCIÓN ACERCA DE =====
+function actualizarStatsInfo() {
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setVal('info-fincas',    fincas.length);
+  setVal('info-tareas',    (tasks || []).length + (tareasEmpleado || []).length);
+  setVal('info-registros', (registros || []).length);
+  setVal('info-empleados', (empleados || []).length);
+  // también actualizar los del hero
+  setVal('stat-fincas',   fincas.length || '0');
+  setVal('stat-registros', (registros || []).length || '0');
+}
+
+// FAQ e initIA se llaman desde showSection directamente (ver arriba)
+let _faqInit = false;
+
+// ===== NOTIFICACIONES PUSH (tareas que vencen hoy) =====
+async function activarNotificaciones() {
+  if (!('Notification' in window)) { toast('Tu navegador no soporta notificaciones.', 'error'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    toast('✅ Notificaciones activadas. Te avisaremos cuando una tarea esté por vencer.');
+    try { localStorage.setItem('cultyra_notif', '1'); } catch(e){}
+    programarRevisionTareas();
+  } else {
+    toast('Notificaciones bloqueadas. Actívalas en la configuración del navegador.', 'error');
+  }
+}
+
+function programarRevisionTareas() {
+  // Revisar cada hora si hay tareas que vencen hoy
+  setInterval(revisarTareasVencenHoy, 60 * 60 * 1000);
+  revisarTareasVencenHoy(); // también ahora
+}
+
+function revisarTareasVencenHoy() {
+  if (Notification.permission !== 'granted') return;
+  const hoy = new Date().toISOString().split('T')[0];
+  const vencenHoy = (tasks || []).filter(t => !t.done && t.fecha === hoy);
+  if (vencenHoy.length > 0) {
+    new Notification('🌱 CULTYRA — Tareas pendientes hoy', {
+      body: `Tenés ${vencenHoy.length} tarea(s) que vencen hoy: ${vencenHoy.map(t => t.text).join(', ')}`,
+      icon: 'img/logo.png',
+      badge: 'img/logo.png',
+    });
+  }
+}
+
+// Activar revisión automática si ya se habían otorgado permisos antes
+window.addEventListener('load', () => {
+  try {
+    if (localStorage.getItem('cultyra_notif') === '1' && Notification.permission === 'granted') {
+      setTimeout(programarRevisionTareas, 3000);
+    }
+  } catch(e){}
+
+  // Restaurar badge del carrito al cargar
+  setTimeout(() => {
+    if (typeof actualizarCartBadge === 'function') actualizarCartBadge();
+    if (typeof renderFAQ === 'function' && document.getElementById('faq-list')) {
+      renderFAQ(); _faqInit = true;
+    }
+  }, 1500);
 });

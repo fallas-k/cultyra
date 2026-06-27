@@ -53,9 +53,9 @@
   <div class="landing-nav">
     <img src="img/logo.png" alt="Cultyra">
     <div class="landing-nav-center">
-      <a href="#" class="lnav-link" onclick="return false;">Plataforma</a>
-      <a href="#" class="lnav-link" onclick="return false;">Funciones</a>
-      <a href="#" class="lnav-link" onclick="return false;">Precios</a>
+      <a href="#l-plataforma" class="lnav-link" onclick="landingScroll('l-plataforma')">Plataforma</a>
+      <a href="#l-funciones" class="lnav-link" onclick="landingScroll('l-funciones')">Funciones</a>
+      <a href="#l-precios" class="lnav-link" onclick="landingScroll('l-precios')">Precios</a>
     </div>
     <div class="landing-nav-right">
       <button class="btn-idioma" onclick="toggleIdioma()" style="background:none;border:1px solid rgba(52,199,89,0.3);border-radius:999px;padding:7px 14px;font-size:12px;cursor:pointer;color:var(--green-lime,#86efac)">🌐 EN</button>
@@ -137,7 +137,7 @@
   </div>
 
   <!-- CÓMO FUNCIONA -->
-  <div class="como-funciona">
+  <div class="como-funciona" id="l-plataforma">
     <h2 data-i18n="como-h2">¿Cómo funciona?</h2>
     <div class="pasos">
       <div class="paso"><div class="num">1</div><h3 data-i18n="paso1-h">Regístrate gratis</h3><p data-i18n="paso1-p">Crea tu cuenta de agricultor en menos de un minuto. Tus trabajadores también pueden tener la suya.</p></div>
@@ -153,7 +153,7 @@
     <div class="stat-item"><div class="n" data-meta="24" data-suf="/7">0</div><div class="l" data-i18n="stat4">Asistente IA</div></div>
   </div>
 
-  <div class="landing-features">
+  <div class="landing-features" id="l-funciones">
     <div class="landing-feat"><div class="icon">🗺️</div><h3 data-i18n="feat1-h">Mapea tu finca</h3><p data-i18n="feat1-p">Dibuja el área exacta de tus terrenos sobre un mapa satelital y calcula las hectáreas automáticamente.</p></div>
     <div class="landing-feat"><div class="icon">🌦️</div><h3 data-i18n="feat2-h">Clima en tiempo real</h3><p data-i18n="feat2-p">Pronóstico hora a hora para tu zona: temperatura, lluvia, humedad y viento para planificar tu jornada.</p></div>
     <div class="landing-feat"><div class="icon">👷</div><h3 data-i18n="feat3-h">Gestiona tu equipo</h3><p data-i18n="feat3-p">Registra a tus empleados y asígnales tareas de campo con prioridad y seguimiento en vivo.</p></div>
@@ -173,6 +173,59 @@
     <div class="testimonio">
       <p>"El plan de cultivo me dice cuándo fertilizar y cuándo cosechar. La ganancia del mes la veo en un solo gráfico."</p>
       <div class="quien"><div class="ava">R</div><div><b>Rafael Ureña</b><small>Aguacate Hass · Pérez Zeledón</small></div></div>
+    </div>
+  </div>
+
+  <!-- PRECIOS -->
+  <div id="l-precios" style="padding:60px 32px;max-width:1100px;margin:0 auto;text-align:center">
+    <div style="font-size:11px;font-weight:700;color:var(--green-bright);letter-spacing:4px;margin-bottom:10px">PRECIOS</div>
+    <h2 style="font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--text-dark);margin-bottom:12px">Planes para cada agricultor</h2>
+    <p style="color:var(--text-light);margin-bottom:36px">Sin compromisos. Cancela cuando quieras.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;text-align:left">
+      <!-- Gratis -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:28px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:8px">BÁSICO</div>
+        <div style="font-size:40px;font-weight:800;color:var(--text-dark)">₡0<span style="font-size:14px;font-weight:400;color:var(--text-light)">/mes</span></div>
+        <div style="font-size:13px;color:var(--green-bright);margin:8px 0 20px">Siempre gratis</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:9px">
+          <li style="font-size:13px;color:var(--text-mid)">✅ Gestión de fincas y mapa satelital</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Clima en tiempo real</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Tareas y empleados</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ CultIA — asistente IA</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Registros contables y gráficos</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Tienda biodegradables</li>
+        </ul>
+        <button onclick="goToLogin()" style="width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dark);padding:12px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Empezar gratis →</button>
+      </div>
+      <!-- Mensual -->
+      <div style="background:linear-gradient(135deg,#0d2010,#166534);border:2px solid var(--green-bright);border-radius:20px;padding:28px;position:relative">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green-bright);color:#061008;font-size:11px;font-weight:700;padding:3px 12px;border-radius:99px">MÁS POPULAR</div>
+        <div style="font-size:13px;font-weight:700;color:var(--green-lime);margin-bottom:8px">MONITOREO MENSUAL</div>
+        <div style="font-size:40px;font-weight:800;color:#fff">₡25.000<span style="font-size:14px;font-weight:400;color:var(--green-lime)">/mes</span></div>
+        <div style="font-size:13px;color:var(--green-bright);margin:8px 0 20px">Todo lo básico +</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:9px">
+          <li style="font-size:13px;color:#e0f0e4">✅ Reporte mensual automático</li>
+          <li style="font-size:13px;color:#e0f0e4">✅ Recomendaciones IA personalizadas</li>
+          <li style="font-size:13px;color:#e0f0e4">✅ Lectura de sensores IoT</li>
+          <li style="font-size:13px;color:#e0f0e4">✅ Soporte prioritario por WhatsApp</li>
+          <li style="font-size:13px;color:#e0f0e4">✅ Historial de datos ilimitado</li>
+        </ul>
+        <button onclick="goToLogin()" style="width:100%;background:var(--green-bright);border:none;color:#061008;padding:12px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Suscribirme →</button>
+      </div>
+      <!-- Premium -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:28px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-light);margin-bottom:8px">PREMIUM ANUAL</div>
+        <div style="font-size:40px;font-weight:800;color:var(--text-dark)">₡180.000<span style="font-size:14px;font-weight:400;color:var(--text-light)">/año</span></div>
+        <div style="font-size:13px;color:var(--green-bright);margin:8px 0 20px">= ₡15.000/mes · Ahorrás 40%</div>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:9px">
+          <li style="font-size:13px;color:var(--text-mid)">✅ Todo el plan Mensual</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ 2 visitas técnicas agronómicas/año</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Instalación de nodos IoT incluida</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Monitoreo 24/7 con alertas SMS</li>
+          <li style="font-size:13px;color:var(--text-mid)">✅ Capacitación del equipo</li>
+        </ul>
+        <a href="https://wa.me/50662053039?text=Hola%20Cultyra%2C%20me%20interesa%20el%20Plan%20Premium" target="_blank" rel="noopener" style="display:block;width:100%;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dark);padding:12px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;text-decoration:none">Contactar →</a>
+      </div>
     </div>
   </div>
 
@@ -342,6 +395,9 @@
     </div>
   </div>
 
+  <!-- ADMIN PANEL -->
+  <section id="admin-panel" class="section"></section>
+
   <!-- INFORMACION -->
   <!-- DASHBOARD -->
   <section id="dashboard" class="section active">
@@ -354,7 +410,7 @@
       <div class="dash-alertas" id="dash-alertas"></div>
       <button onclick="descargarReportePDF()" style="margin:-8px 8px 14px 0;background:var(--green-mid);border:none;color:#fff;border-radius:999px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">📄 Generar informe PDF</button>
       <button class="btn-demo" onclick="cargarDemo()" style="margin:-8px 8px 14px 0;">✨ Cargar finca de demostración</button>
-      <button id="btn-notif" onclick="pedirNotificaciones()" style="margin:-8px 0 14px;background:none;border:1px dashed var(--green-bright);color:var(--green-mid);border-radius:999px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">🔔 Activar notificaciones de alertas</button>
+      <button id="btn-notif" onclick="activarNotificaciones()" style="margin:-8px 0 14px;background:none;border:1px dashed var(--green-bright);color:var(--green-mid);border-radius:999px;padding:8px 18px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">🔔 Activar notificaciones de alertas</button>
       <div class="dash-grid">
         <div class="dash-card">
           <h3>🌦️ Clima de hoy</h3>
@@ -383,6 +439,34 @@
           <div class="sub" id="dash-emp-sub"></div>
           <span class="dash-link" onclick="irA('empleados')">Gestionar equipo →</span>
         </div>
+        <div class="dash-card">
+          <h3>🆘 Soporte</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+            <a href="https://wa.me/50662053039?text=Hola%20Cultyra%2C%20necesito%20ayuda%20%F0%9F%8C%B1" target="_blank" rel="noopener"
+               style="display:flex;align-items:center;gap:9px;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);border-radius:10px;padding:9px 11px;text-decoration:none;color:inherit">
+              <span style="font-size:18px">💬</span>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text-dark)">WhatsApp Directo</div>
+                <div style="font-size:10px;color:var(--green-bright)">+506 6205-3039</div>
+              </div>
+            </a>
+            <a href="mailto:soportecultyra@gmail.com"
+               style="display:flex;align-items:center;gap:9px;background:rgba(52,199,89,0.05);border:1px solid rgba(52,199,89,0.12);border-radius:10px;padding:9px 11px;text-decoration:none;color:inherit">
+              <span style="font-size:18px">📧</span>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text-dark)">Correo electrónico</div>
+                <div style="font-size:10px;color:var(--text-light)">soportecultyra@gmail.com</div>
+              </div>
+            </a>
+            <button onclick="irA('ia')" style="display:flex;align-items:center;gap:9px;background:rgba(52,199,89,0.05);border:1px solid rgba(52,199,89,0.12);border-radius:10px;padding:9px 11px;cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif">
+              <span style="font-size:18px">🤖</span>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text-dark)">CultIA 24/7</div>
+                <div style="font-size:10px;color:var(--text-light)">Asistente agronómico IA</div>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -390,11 +474,10 @@
   <section id="informacion" class="section">
     <div class="hero">
       <div class="hero-inner">
-        <!-- COLUMNA IZQUIERDA: texto -->
         <div class="hero-left">
           <div class="hero-eyebrow">
             <span class="hero-dot"></span>
-            Sistema activo · CTP José Figueres Ferrer · CR 🇨🇷
+            Agrotecnología Costarricense · CTP José Figueres Ferrer 🇨🇷
           </div>
           <h1>Tecnología que<br><em>cultiva</em><br>el futuro</h1>
           <p>Gestión de fincas con mapas satelitales, sensores IoT, IA agronómica y control de cultivos en tiempo real. Todo en una sola plataforma.</p>
@@ -403,122 +486,135 @@
             <button class="btn-secondary" onclick="showSection('ia', document.querySelectorAll('.nav-btn')[9])">Consultar IA</button>
           </div>
           <div class="hero-stats-row">
-            <div class="hsr-item"><span class="hsr-n">120+</span><span class="hsr-l">Fincas activas</span></div>
+            <div class="hsr-item"><span class="hsr-n" id="stat-fincas">1</span><span class="hsr-l">Finca activa</span></div>
             <div class="hsr-sep"></div>
-            <div class="hsr-item"><span class="hsr-n">500+</span><span class="hsr-l">Agricultores</span></div>
+            <div class="hsr-item"><span class="hsr-n" id="stat-registros">0</span><span class="hsr-l">Registros</span></div>
             <div class="hsr-sep"></div>
             <div class="hsr-item"><span class="hsr-n">24/7</span><span class="hsr-l">IA disponible</span></div>
           </div>
         </div>
-
-        <!-- COLUMNA DERECHA: ilustración agritech -->
         <div class="hero-right">
-          <!-- Chips flotantes de datos -->
           <div class="data-chip chip-1">💧 Humedad suelo <b>82%</b></div>
           <div class="data-chip chip-2">🌡️ Temperatura <b>22°C</b></div>
           <div class="data-chip chip-3">📈 Rendimiento <b>+18%</b></div>
           <div class="data-chip chip-4">☀️ Radiación <b>1240 lux</b></div>
-
-          <!-- SVG planta + circuito -->
           <svg class="hero-svg" viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg">
-            <!-- FONDO glow central -->
             <circle cx="160" cy="220" r="70" fill="rgba(52,199,89,0.05)"/>
             <circle cx="160" cy="220" r="44" fill="rgba(52,199,89,0.08)" class="svg-pulse"/>
-
-            <!-- CIRCUITO: trazos principales (raíces) -->
             <path d="M160 220 L160 270 L100 270 L100 310" stroke="#34c759" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity="0.45"/>
             <path d="M160 220 L160 270 L220 270 L220 310" stroke="#34c759" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity="0.45"/>
-            <path d="M160 230 L70 230 L70 290 L50 290" stroke="#34c759" stroke-width="1" fill="none" opacity="0.3"/>
-            <path d="M160 230 L250 230 L250 290 L270 290" stroke="#34c759" stroke-width="1" fill="none" opacity="0.3"/>
-            <path d="M100 270 L60 270" stroke="#34c759" stroke-width="1" fill="none" opacity="0.25"/>
-            <path d="M220 270 L260 270" stroke="#34c759" stroke-width="1" fill="none" opacity="0.25"/>
-
-            <!-- Puntos de conexión (nodos de circuito) -->
             <circle cx="100" cy="270" r="4" fill="#0d1f10" stroke="#34c759" stroke-width="1.5" opacity="0.8"/>
             <circle cx="220" cy="270" r="4" fill="#0d1f10" stroke="#34c759" stroke-width="1.5" opacity="0.8"/>
-            <circle cx="70" cy="290" r="3" fill="#34c759" opacity="0.5"/>
-            <circle cx="250" cy="290" r="3" fill="#34c759" opacity="0.5"/>
-            <circle cx="100" cy="310" r="2.5" fill="#f59e0b" opacity="0.7"/>
-            <circle cx="220" cy="310" r="2.5" fill="#f59e0b" opacity="0.7"/>
-
-            <!-- NODO CENTRAL (corazón del sistema) -->
             <circle cx="160" cy="220" r="22" fill="#0a1a0c" stroke="#34c759" stroke-width="2"/>
             <circle cx="160" cy="220" r="14" fill="#112214" stroke="rgba(52,199,89,0.4)" stroke-width="1"/>
-            <circle cx="160" cy="220" r="6" fill="#34c759" class="svg-pulse"/>
-            <!-- Cruz de circuito en el nodo -->
-            <line x1="148" y1="220" x2="172" y2="220" stroke="rgba(52,199,89,0.5)" stroke-width="1"/>
-            <line x1="160" y1="208" x2="160" y2="232" stroke="rgba(52,199,89,0.5)" stroke-width="1"/>
-
-            <!-- TALLO principal -->
-            <line x1="160" y1="198" x2="160" y2="60" stroke="#34c759" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
-
-            <!-- HOJAS principales -->
-            <!-- Hoja izquierda grande -->
-            <path d="M158 150 Q110 128 85 95 Q118 102 148 132 Z" fill="#34c759" opacity="0.85"/>
-            <path d="M90 97 Q112 104 148 133" stroke="rgba(134,239,172,0.6)" stroke-width="0.8" fill="none"/>
-            <!-- Hoja derecha grande -->
-            <path d="M162 138 Q208 116 235 82 Q200 90 168 120 Z" fill="#34c759" opacity="0.75"/>
-            <path d="M233 84 Q204 92 168 122" stroke="rgba(134,239,172,0.5)" stroke-width="0.8" fill="none"/>
-            <!-- Hoja superior -->
-            <path d="M157 90 Q140 58 145 34 Q168 54 166 88 Z" fill="#34c759" opacity="0.95"/>
-            <path d="M145 36 Q165 56 165 87" stroke="rgba(134,239,172,0.7)" stroke-width="1" fill="none"/>
-            <!-- Hojitas pequeñas -->
-            <path d="M158 172 Q128 155 112 138 Q140 148 157 170 Z" fill="#86efac" opacity="0.65"/>
-            <path d="M162 165 Q192 148 208 130 Q180 143 163 163 Z" fill="#86efac" opacity="0.55"/>
-
-            <!-- PARTÍCULAS de luz -->
-            <circle cx="128" cy="108" r="2" fill="#86efac" opacity="0.7" class="sparkle s1"/>
-            <circle cx="196" cy="96" r="1.5" fill="#86efac" opacity="0.6" class="sparkle s2"/>
-            <circle cx="152" cy="42" r="2" fill="#f59e0b" opacity="0.8" class="sparkle s3"/>
-            <circle cx="78" cy="90" r="1.5" fill="#34c759" opacity="0.5" class="sparkle s1"/>
-            <circle cx="238" cy="78" r="1.5" fill="#34c759" opacity="0.4" class="sparkle s2"/>
-
-            <!-- Datos flotantes en el circuito -->
-            <text x="55" y="287" font-family="Space Mono,monospace" font-size="7" fill="#34c759" opacity="0.5">pH 6.8</text>
-            <text x="242" y="287" font-family="Space Mono,monospace" font-size="7" fill="#34c759" opacity="0.5">N2O</text>
+            <text x="160" y="225" text-anchor="middle" fill="#34c759" font-size="14">⚡</text>
+            <path d="M160 198 L160 158 L130 120" stroke="#34c759" stroke-width="2" fill="none" opacity="0.8"/>
+            <path d="M160 198 L180 155 L200 120" stroke="#34c759" stroke-width="2" fill="none" opacity="0.7"/>
+            <path d="M160 198 L145 155 L120 125" stroke="#52b788" stroke-width="1.5" fill="none" opacity="0.5"/>
+            <ellipse cx="130" cy="115" rx="18" ry="12" fill="#166534" opacity="0.9"/>
+            <ellipse cx="200" cy="115" rx="18" ry="12" fill="#166534" opacity="0.9"/>
+            <ellipse cx="118" cy="120" rx="14" ry="9" fill="#34c759" opacity="0.8"/>
           </svg>
         </div>
       </div>
     </div>
-    <div class="info-cards">
+
+    <!-- ESTADÍSTICAS REALES -->
+    <div id="stats-reales" style="max-width:900px;margin:0 auto 40px;padding:0 24px">
+      <div style="background:linear-gradient(135deg,#0d2010,#112214);border:1px solid rgba(52,199,89,0.2);border-radius:18px;padding:24px 28px">
+        <div style="font-size:11px;font-weight:700;color:var(--green-bright);letter-spacing:4px;margin-bottom:16px;text-align:center">TU ACTIVIDAD EN CULTYRA</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#34c759" id="info-fincas">—</div>
+            <div style="font-size:12px;color:var(--text-light)">🌾 Fincas</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#34c759" id="info-tareas">—</div>
+            <div style="font-size:12px;color:var(--text-light)">📋 Tareas</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#34c759" id="info-registros">—</div>
+            <div style="font-size:12px;color:var(--text-light)">💰 Registros</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#34c759" id="info-empleados">—</div>
+            <div style="font-size:12px;color:var(--text-light)">👷 Empleados</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:800;color:#f59e0b" id="info-productos">30</div>
+            <div style="font-size:12px;color:var(--text-light)">📦 Productos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETAS QUIÉNES SOMOS + SOSTENIBILIDAD -->
+    <div class="about-cards" style="max-width:900px;margin:0 auto 40px;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px">
       <div class="card">
         <div class="card-icon">🌱</div>
-        <h3>Nuestra Misión</h3>
-        <p>Transformar la agricultura con tecnología accesible, sostenible e inteligente, conectando al agricultor con herramientas digitales que potencien el rendimiento de sus cultivos y protejan el medio ambiente.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🔭</div>
-        <h3>Nuestra Visión</h3>
-        <p>Ser la plataforma líder en agrotecnología en América Latina para 2030, construyendo un ecosistema digital donde cada finca sea un campo inteligente, productivo y en armonía con la naturaleza.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🤝</div>
         <h3>Quiénes Somos</h3>
-        <p>Cultyra es una startup costarricense fundada por apasionados de la tecnología y el agro. Ofrecemos sensores IoT, productos biodegradables y una plataforma IA para el monitoreo y cuidado de cultivos.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">📊</div>
-        <h3>Nuestros Números</h3>
-        <p><strong style="color:var(--green-mid);font-size:28px;">120+</strong> fincas activas<br><strong style="color:var(--green-mid);font-size:28px;">500+</strong> agricultores satisfechos<br><strong style="color:var(--green-mid);font-size:28px;">12</strong> productos certificados</p>
+        <p>Cultyra es un emprendimiento costarricense del CTP José Figueres Ferrer. Unimos tecnología IoT, inteligencia artificial y productos biodegradables para que el agricultor de hoy trabaje con las herramientas del futuro.</p>
       </div>
       <div class="card">
         <div class="card-icon">🌿</div>
         <h3>Sostenibilidad</h3>
-        <p>Todos nuestros productos son diseñados bajo criterios de economía circular. Desde el packaging reciclable hasta los insumos 100% biodegradables, cuidamos la tierra que nos alimenta.</p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🏆</div>
-        <h3>Reconocimientos</h3>
-        <p>Premio AgroInnova 2023 · Finalistas StartUp Latam 2024 · Certificación IICA de Sostenibilidad Agrícola · Alianza con el INTA de Costa Rica.</p>
+        <p>Todos nuestros productos son biodegradables y certificados SENASA. Desde el bocashi hasta el extracto de neem, cuidamos la tierra que nos alimenta y promovemos la agricultura orgánica en Costa Rica.</p>
       </div>
     </div>
+
+    <!-- TESTIMONIOS -->
+    <div style="max-width:900px;margin:0 auto 40px;padding:0 24px">
+      <div style="font-size:11px;font-weight:700;color:var(--green-bright);letter-spacing:4px;margin-bottom:20px;text-align:center">CASOS DE USO REALES</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px">
+          <div style="font-size:22px;margin-bottom:10px">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:13px;color:var(--text-mid);font-style:italic;margin-bottom:12px">"Con CultIA identifiqué sigatoka en mi banano sin esperar al agrónomo. Me recomendó aceite de neem y en dos semanas mejoró."</p>
+          <div style="font-size:12px;font-weight:700;color:var(--text-dark)">Juan C. · Finca bananera, Limón</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px">
+          <div style="font-size:22px;margin-bottom:10px">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:13px;color:var(--text-mid);font-style:italic;margin-bottom:12px">"Por primera vez en 20 años sé exactamente cuánto gano por hectárea. Los registros de Cultyra me cambiaron la forma de trabajar."</p>
+          <div style="font-size:12px;font-weight:700;color:var(--text-dark)">María R. · Productora de tomate, Cartago</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px">
+          <div style="font-size:22px;margin-bottom:10px">⭐⭐⭐⭐⭐</div>
+          <p style="font-size:13px;color:var(--text-mid);font-style:italic;margin-bottom:12px">"Asigno las tareas a mis peones desde el celular y ellos las ven al instante. Antes lo hacía todo de boca y se olvidaban."</p>
+          <div style="font-size:12px;font-weight:700;color:var(--text-dark)">Carlos M. · Cafetalero, San Marcos de Tarrazú</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ ACORDEÓN -->
+    <div style="max-width:900px;margin:0 auto 40px;padding:0 24px">
+      <div style="font-size:11px;font-weight:700;color:var(--green-bright);letter-spacing:4px;margin-bottom:20px;text-align:center">PREGUNTAS FRECUENTES</div>
+      <div id="faq-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- POLÍTICA DE PRIVACIDAD -->
+    <div id="privacidad-section" style="max-width:900px;margin:0 auto 40px;padding:0 24px">
+      <div style="background:rgba(52,199,89,0.05);border:1px solid rgba(52,199,89,0.15);border-radius:16px;padding:24px 28px">
+        <h3 style="color:var(--text-dark);font-size:16px;margin-bottom:12px">🔒 Política de Privacidad</h3>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.7">
+          <p style="margin-bottom:8px"><strong style="color:var(--text-dark)">Datos que recopilamos:</strong> nombre, correo electrónico, datos de finca (ubicación, cultivos, hectáreas), registros contables y tareas. No recopilamos datos de pago ni información bancaria.</p>
+          <p style="margin-bottom:8px"><strong style="color:var(--text-dark)">Uso de datos:</strong> Los datos se utilizan exclusivamente para brindar el servicio de CULTYRA. Nunca compartimos, vendemos ni cedemos datos a terceros.</p>
+          <p style="margin-bottom:8px"><strong style="color:var(--text-dark)">Almacenamiento:</strong> Los datos se almacenan en servidores de Google Cloud (Firebase) y Railway con cifrado TLS 1.3. Solo el propio usuario puede acceder a sus datos.</p>
+          <p style="margin-bottom:8px"><strong style="color:var(--text-dark)">IA (CultIA):</strong> Las consultas a la IA se envían de forma anónima a la API de Anthropic para generar respuestas. No se almacenan en nuestra base de datos.</p>
+          <p style="margin-bottom:0"><strong style="color:var(--text-dark)">Sus derechos:</strong> Puede solicitar la eliminación de sus datos en cualquier momento escribiendo a <a href="mailto:soportecultyra@gmail.com" style="color:var(--green-bright)">soportecultyra@gmail.com</a>. · Versión 1.0 · Junio 2026</p>
+        </div>
+      </div>
+    </div>
+
     <footer>
       <div class="footer-logos">
         <img src="img/logo.png" alt="Cultyra">
-        <img src="img/logo.png" alt="Ciberseguridad">
       </div>
-      <p>© 2024 Cultyra – Tecnología que Cultiva el Futuro · San José, Costa Rica</p>
-      <p style="margin-top:4px;">Desarrollado con 💚 para el campo costarricense</p>
+      <p>© 2026 Cultyra – Tecnología que Cultiva el Futuro · San José, Costa Rica</p>
+      <p style="margin-top:4px;">Desarrollado con 💚 para el campo costarricense · CTP José Figueres Ferrer · CORVEC 2026</p>
+      <p style="margin-top:8px;font-size:11px;opacity:0.6">
+        <span onclick="irA('informacion')" style="cursor:pointer;text-decoration:underline">Política de privacidad</span> ·
+        <a href="mailto:soportecultyra@gmail.com" style="color:inherit">soportecultyra@gmail.com</a> ·
+        <a href="https://wa.me/50662053039" target="_blank" rel="noopener" style="color:inherit">+506 6205-3039</a>
+      </p>
     </footer>
   </section>
 
@@ -636,11 +732,15 @@
     <div class="ia-container">
       <div class="ia-header">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <div class="ia-badge">IA Activa – CultIA</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="ia-badge">🧠 CultIA — Visión + Texto</div>
+            <span style="font-size:10px;background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3);padding:2px 8px;border-radius:99px;font-weight:600">Claude AI · Multimodal</span>
+          </div>
           <button onclick="nuevaConversacionIA()" style="background:none;border:1px dashed rgba(52,199,89,0.5);color:var(--green-mid);border-radius:999px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">🔄 Nueva conversación</button>
         </div>
-        <h2>Asistente de Cultivo IA</h2>
-        <p>Consulta sobre plagas, enfermedades, fertilizantes biodegradables y más.</p>
+        <h2>Asistente Agronómico con IA</h2>
+        <p>Tomá una foto de tu cultivo o escribí tu consulta — sobre cualquier cultivo de Costa Rica y el mundo.</p>
+        <div id="ia-personalizacion" style="display:none;font-size:11px;background:rgba(52,199,89,0.1);border:1px solid rgba(52,199,89,0.25);color:var(--green-bright);padding:4px 12px;border-radius:99px;margin-top:8px;width:fit-content"></div>
       </div>
       <div class="ia-suggestions" id="ia-suggestions">
         <span class="suggestion-chip" onclick="sendSuggestion(this.innerText)">🐛 ¿Cómo combatir pulgones?</span>
@@ -656,7 +756,12 @@
       </div>
       <div class="chat-messages" id="chat-messages">
         <div class="msg assistant">
-          <div class="msg-bubble">¡Hola! Soy CultIA, el asistente inteligente de Cultyra 🌱. Puedo ayudarte con recomendaciones sobre plagas, enfermedades, productos biodegradables y el cuidado de tus cultivos. ¿En qué puedo ayudarte hoy?</div>
+          <div class="msg-bubble">¡Hola! Soy <strong>CultIA</strong> 🌱 — tu asistente agronómico con visión artificial.<br><br>
+          Puedo ayudarte con:<br>
+          📸 <strong>Analizar fotos</strong> de plantas, plagas, enfermedades o suelo<br>
+          🌍 <strong>Agricultura de Costa Rica y el mundo</strong> (más de 50 cultivos)<br>
+          🐛 <strong>Diagnosticar problemas</strong> y recomendar productos biodegradables<br><br>
+          ¿Qué necesitás hoy?</div>
           <span class="msg-time">Ahora</span>
         </div>
         <div class="typing-indicator" id="typing">
@@ -676,10 +781,31 @@
         <button class="ia-chip" onclick="preguntaRapida('¿Qué cultivo me recomiendas para zonas altas de Costa Rica?')">⛰️ Cultivos de altura</button>
       </div>
       <div class="chat-input-area">
-        <textarea class="chat-input" id="chat-input" rows="1" placeholder="Pregunta sobre tu cultivo..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
-        <button class="chat-send" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-        </button>
+        <!-- Preview de imagen antes de enviar -->
+        <div id="ia-img-preview" style="display:none;padding:4px 8px"></div>
+
+        <!-- Input oculto para imagen -->
+        <input type="file" id="ia-foto-input" accept="image/*" capture="environment" style="display:none" onchange="procesarImagenIA(this)">
+
+        <div style="display:flex;align-items:flex-end;gap:8px">
+          <!-- Botón cámara -->
+          <button onclick="document.getElementById('ia-foto-input').click()" title="Tomar foto o subir imagen"
+            style="background:rgba(52,199,89,0.12);border:1px solid rgba(52,199,89,0.3);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:20px;flex-shrink:0;line-height:1;color:var(--green-bright)">
+            📸
+          </button>
+
+          <textarea class="chat-input" id="chat-input" rows="1"
+            placeholder="Preguntá sobre tu cultivo o subí una foto 📸..."
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+
+          <button class="chat-send" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+          </button>
+        </div>
+
+        <div style="font-size:11px;color:var(--text-light);text-align:center;margin-top:6px;opacity:0.7">
+          📸 Subí fotos de plantas, plagas o suelo · 🌍 Agricultura CR y mundial · Powered by Claude AI
+        </div>
       </div>
     </div>
   </section>
@@ -972,66 +1098,56 @@
   <!-- EMPLEADOS -->
   <section id="empleados" class="section">
     <div class="empleados-container">
-      <div class="section-title">
-        <div class="section-tag">Mi Equipo</div>
-        <h2>Gestión de empleados</h2>
-        <p>Registra a tus trabajadores, asígnales tareas y lleva el control de tu equipo.</p>
-      </div>
-
-      <!-- KPIs del equipo -->
-      <div class="emp-kpis" id="emp-kpis">
-        <div class="emp-kpi"><span id="kpi-total-emp">0</span><small>Total</small></div>
-        <div class="emp-kpi"><span id="kpi-activos-emp">0</span><small>Activos hoy</small></div>
-        <div class="emp-kpi"><span id="kpi-tareas-pend">0</span><small>Tareas pendientes</small></div>
-        <div class="emp-kpi"><span id="kpi-tareas-done">0</span><small>Completadas</small></div>
-      </div>
-
-      <!-- Buscador y filtros -->
-      <div class="emp-toolbar">
-        <div class="emp-search-wrap">
-          <span class="emp-search-icon">🔍</span>
-          <input type="text" id="emp-buscar" placeholder="Buscar empleado..." oninput="filtrarEmpleados(this.value)">
+      <div class="section-title" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="section-tag">Mi Equipo</div>
+          <h2>Gestión de empleados</h2>
+          <p>Registra a tus trabajadores y asígnales tareas de campo.</p>
         </div>
-        <select id="emp-filtro-rol" onchange="filtrarEmpleados(document.getElementById('emp-buscar').value)" class="emp-filtro-sel">
-          <option value="">Todos los roles</option>
-          <option>Peón agrícola</option>
-          <option>Capataz</option>
-          <option>Operador de maquinaria</option>
-          <option>Riego y fumigación</option>
-          <option>Cosecha</option>
-          <option>Otro</option>
-        </select>
-        <button class="emp-btn-nuevo" onclick="abrirModalEmpleado()">+ Nuevo empleado</button>
+        <button onclick="abrirModalEmpleado()" style="background:linear-gradient(135deg,#34c759,#28a745);border:none;color:#fff;padding:12px 22px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 15px rgba(52,199,89,0.3);white-space:nowrap">
+          <span style="font-size:18px">👷</span> + Agregar empleado
+        </button>
       </div>
-
       <div class="empleados-grid" id="empleados-grid"></div>
     </div>
   </section>
 
-  <!-- MODAL AGREGAR / EDITAR EMPLEADO -->
-  <div class="modal-overlay" id="emp-modal">
-    <div class="modal emp-modal-inner">
-      <div class="emp-modal-header">
-        <h3 id="emp-modal-titulo">👷 Nuevo empleado</h3>
-        <button onclick="cerrarModalEmpleado()" class="modal-close-btn">✕</button>
-      </div>
+  <!-- MODAL NUEVO EMPLEADO -->
+  <div id="emp-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;padding:16px;overflow-y:auto;backdrop-filter:blur(4px)" onclick="if(event.target===this)cerrarModalEmpleado()">
+    <div style="background:linear-gradient(160deg,#0d2010,#0a1a0c);border:1px solid rgba(52,199,89,0.2);border-radius:22px;max-width:480px;margin:auto;padding:0;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.6)">
 
-      <!-- Tabs del modal -->
-      <div class="emp-tabs">
-        <button class="emp-tab active" onclick="switchEmpTab('datos', this)">📋 Datos</button>
-        <button class="emp-tab" onclick="switchEmpTab('acceso', this)">🔐 Acceso web</button>
-      </div>
-
-      <!-- Tab: Datos personales -->
-      <div id="emp-tab-datos" class="emp-tab-panel active">
-        <div class="emp-form-grid">
-          <div class="emp-form-group">
-            <label>Nombre completo *</label>
-            <input type="text" id="emp-nombre" placeholder="Ej. Juan Pérez Rodríguez">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,rgba(52,199,89,0.15),rgba(40,167,69,0.08));padding:20px 24px 16px;border-bottom:1px solid rgba(52,199,89,0.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:42px;height:42px;background:linear-gradient(135deg,#34c759,#28a745);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px">👷</div>
+            <div>
+              <h3 id="emp-modal-titulo" style="margin:0;font-size:17px;color:#e0f0e4;font-family:'Playfair Display',serif">Nuevo empleado</h3>
+              <p style="margin:0;font-size:12px;color:#a0c4a8">Completa los datos del trabajador</p>
+            </div>
           </div>
-          <div class="emp-form-group">
-            <label>Rol / Puesto *</label>
-            <select id="emp-rol">
+          <button onclick="cerrarModalEmpleado()" style="background:rgba(255,255,255,0.08);border:none;color:#a0c4a8;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">×</button>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display:flex;gap:6px;margin-top:14px">
+          <button onclick="empTab('datos')" id="tab-datos" class="emp-tab emp-tab-active">📋 Datos</button>
+          <button onclick="empTab('acceso')" id="tab-acceso" class="emp-tab">🔐 Acceso web</button>
+        </div>
+      </div>
+
+      <!-- Tab: Datos -->
+      <div id="emp-panel-datos" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+
+        <div class="emp-field-group">
+          <label class="emp-label">Nombre completo *</label>
+          <input id="emp-nombre" type="text" class="emp-input" placeholder="Ej. Juan Pérez Rodríguez">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="emp-field-group">
+            <label class="emp-label">Rol / Puesto *</label>
+            <select id="emp-rol" class="emp-input">
               <option>Peón agrícola</option>
               <option>Capataz</option>
               <option>Operador de maquinaria</option>
@@ -1040,77 +1156,84 @@
               <option>Otro</option>
             </select>
           </div>
-          <div class="emp-form-group">
-            <label>Teléfono</label>
-            <input type="tel" id="emp-tel" placeholder="+506 0000-0000">
-          </div>
-          <div class="emp-form-group">
-            <label>Cédula / ID</label>
-            <input type="text" id="emp-cedula" placeholder="Ej. 1-2345-6789">
-          </div>
-          <div class="emp-form-group">
-            <label>Fecha de ingreso</label>
-            <input type="date" id="emp-fecha-ingreso">
-          </div>
-          <div class="emp-form-group">
-            <label>Jornada laboral</label>
-            <select id="emp-jornada">
-              <option value="completa">Tiempo completo</option>
-              <option value="parcial">Tiempo parcial</option>
-              <option value="temporal">Temporal / zafra</option>
-              <option value="contrato">Por contrato</option>
+          <div class="emp-field-group">
+            <label class="emp-label">Jornada laboral</label>
+            <select id="emp-jornada" class="emp-input">
+              <option>Tiempo completo</option>
+              <option>Medio tiempo</option>
+              <option>Por temporada</option>
+              <option>Por obra</option>
             </select>
           </div>
-          <div class="emp-form-group">
-            <label>Salario (₡ / mes)</label>
-            <input type="number" id="emp-salario" placeholder="Ej. 380000" min="0">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="emp-field-group">
+            <label class="emp-label">Teléfono</label>
+            <input id="emp-tel" type="tel" class="emp-input" placeholder="+506 0000-0000">
           </div>
-          <div class="emp-form-group">
-            <label>Notas internas</label>
-            <input type="text" id="emp-notas" placeholder="Observaciones opcionales...">
+          <div class="emp-field-group">
+            <label class="emp-label">Cédula / ID</label>
+            <input id="emp-cedula" type="text" class="emp-input" placeholder="1-2345-6789">
           </div>
         </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="emp-field-group">
+            <label class="emp-label">Fecha de ingreso</label>
+            <input id="emp-fecha" type="date" class="emp-input">
+          </div>
+          <div class="emp-field-group">
+            <label class="emp-label">Salario (₡/mes)</label>
+            <input id="emp-salario" type="number" class="emp-input" placeholder="380000">
+          </div>
+        </div>
+
+        <div class="emp-field-group">
+          <label class="emp-label">Notas internas</label>
+          <textarea id="emp-notas" class="emp-input" rows="2" placeholder="Observaciones opcionales..." style="resize:vertical"></textarea>
+        </div>
+
       </div>
 
       <!-- Tab: Acceso web -->
-      <div id="emp-tab-acceso" class="emp-tab-panel">
-        <div class="emp-acceso-info">
-          <div class="emp-acceso-icon">🌐</div>
-          <p>Crea una cuenta para que el empleado acceda a <b>cultyraagr.web.app</b> y vea sus tareas, el clima y el asistente IA.</p>
-          <p style="font-size:12px;color:var(--text-light);margin-top:6px;">Opcional — el empleado puede existir sin cuenta web.</p>
-        </div>
-        <div class="emp-form-grid">
-          <div class="emp-form-group full-width">
-            <label>Correo del empleado</label>
-            <input type="email" id="emp-email" placeholder="empleado@correo.com">
-          </div>
-          <div class="emp-form-group full-width">
-            <label>Contraseña temporal</label>
-            <div style="position:relative">
-              <input type="text" id="emp-pass" placeholder="Mínimo 6 caracteres" autocomplete="off">
-              <button type="button" onclick="generarPassEmp()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer;">🎲 Generar</button>
-            </div>
+      <div id="emp-panel-acceso" style="padding:20px 24px;display:none;flex-direction:column;gap:14px">
+
+        <div style="background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);border-radius:12px;padding:14px;display:flex;gap:12px">
+          <span style="font-size:22px">🌐</span>
+          <div style="font-size:13px;color:#a0c4a8;line-height:1.6">
+            Crea una cuenta para que el empleado acceda a <b style="color:#34c759">cultyraagr.web.app</b> y vea sus tareas, el clima y el asistente IA.<br>
+            <span style="font-size:11px;opacity:0.7">Opcional — el empleado puede existir sin cuenta web.</span>
           </div>
         </div>
+
+        <div class="emp-field-group">
+          <label class="emp-label">Correo del empleado</label>
+          <input id="emp-email" type="email" class="emp-input" placeholder="empleado@correo.com">
+        </div>
+
+        <div class="emp-field-group">
+          <label class="emp-label">Contraseña temporal</label>
+          <div style="display:flex;gap:8px">
+            <input id="emp-pass" type="text" class="emp-input" placeholder="Mínimo 6 caracteres" autocomplete="off" style="flex:1">
+            <button onclick="generarPassEmp()" style="background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);color:#34c759;border-radius:10px;padding:0 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;font-family:'DM Sans',sans-serif">🎲 Generar</button>
+          </div>
+        </div>
+
+        <div id="emp-pass-hint" style="display:none;background:rgba(52,199,89,0.08);border:1px solid rgba(52,199,89,0.2);border-radius:10px;padding:12px;font-size:12px;color:#a0c4a8">
+          ⚠️ Anota esta contraseña antes de guardar — no se volverá a mostrar aquí.
+        </div>
+
       </div>
 
-      <div class="emp-modal-footer">
-        <button class="btn-cancel" onclick="cerrarModalEmpleado()">Cancelar</button>
-        <button class="btn-primary" id="btn-add-emp" onclick="addEmpleado()">+ Registrar empleado</button>
+      <!-- Footer -->
+      <div style="padding:16px 24px;border-top:1px solid rgba(52,199,89,0.1);display:flex;gap:10px">
+        <button onclick="cerrarModalEmpleado()" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#a0c4a8;padding:12px;border-radius:12px;cursor:pointer;font-size:14px;font-family:'DM Sans',sans-serif">Cancelar</button>
+        <button id="btn-add-emp" onclick="addEmpleado()" style="flex:2;background:linear-gradient(135deg,#34c759,#28a745);border:none;color:#fff;padding:12px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;box-shadow:0 4px 15px rgba(52,199,89,0.3)">+ Registrar empleado</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL PERFIL EMPLEADO -->
-  <div class="modal-overlay" id="emp-perfil-modal">
-    <div class="modal emp-modal-inner" style="max-width:480px">
-      <div class="emp-modal-header">
-        <h3 id="emp-perfil-titulo">👷 Perfil del empleado</h3>
-        <button onclick="document.getElementById('emp-perfil-modal').classList.remove('open')" class="modal-close-btn">✕</button>
-      </div>
-      <div id="emp-perfil-body"></div>
-    </div>
-  </div>
 
 
   <div id="reporte"></div>
@@ -1214,6 +1337,7 @@
   <!-- ======================== -->
 
   <script src="js/ui.js"></script>
+  <script src="js/admin.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/clima.js"></script>

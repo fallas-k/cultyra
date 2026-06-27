@@ -10,6 +10,20 @@ let sesion = { uid: null, nombre: null, email: null, token: null, rol: 'agricult
 const fbAuth = firebase.auth();
 fbAuth.languageCode = 'es';
 
+// Segunda instancia de Firebase para crear cuentas de empleados
+// sin interrumpir la sesión del patrón/agricultor
+let _fbSecundaria = null;
+function getFirebaseSecundaria() {
+  if (_fbSecundaria) return _fbSecundaria;
+  const cfg = firebase.app().options; // reutilizamos la misma config
+  try {
+    _fbSecundaria = firebase.initializeApp(cfg, 'secundaria');
+  } catch(e) {
+    _fbSecundaria = firebase.app('secundaria');
+  }
+  return _fbSecundaria;
+}
+
 // Obtener siempre un token fresco (Firebase lo renueva solo)
 async function getToken() {
   try {
@@ -166,10 +180,22 @@ async function intentarSesionGuardada() {
       if (!user) { resolve(false); return; }
       const token  = await user.getIdToken().catch(() => null);
       const nombre = user.displayName || user.email.split('@')[0];
-      const rolGuardado = (() => {
-        try { const s = JSON.parse(localStorage.getItem('cultyra_sesion') || '{}'); return s.rol || 'agricultor'; } catch(e) { return 'agricultor'; }
-      })();
-      sesion = { uid: user.uid, nombre, email: user.email, token, rol: rolGuardado, foto: user.photoURL || null };
+
+      // Leer rol desde Firestore primero (empleados lo tienen guardado ahí)
+      let rol = 'agricultor';
+      try {
+        const doc = await firebase.firestore().collection('usuarios').doc(user.uid).get();
+        if (doc.exists && doc.data().rol) rol = doc.data().rol;
+        else {
+          // Fallback a localStorage
+          const s = JSON.parse(localStorage.getItem('cultyra_sesion') || '{}');
+          if (s.rol) rol = s.rol;
+        }
+      } catch(e) {
+        try { const s = JSON.parse(localStorage.getItem('cultyra_sesion') || '{}'); if (s.rol) rol = s.rol; } catch(_) {}
+      }
+
+      sesion = { uid: user.uid, nombre, email: user.email, token, rol, foto: user.photoURL || null };
       const splash = document.getElementById('splash');
       if (splash) splash.style.display = 'none';
       document.getElementById('landing').style.display = 'none';
@@ -242,6 +268,19 @@ let rolActual = 'agricultor';
 function aplicarRol(rol) {
   rolActual = rol || 'agricultor';
   const esE = rolActual === 'empleado';
+  const esA = rolActual === 'admin';
+
+  // Si es admin, mostrar panel admin directamente
+  if (esA) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const adminSec = document.getElementById('admin-panel');
+    if (adminSec) { adminSec.classList.add('active'); renderAdminPanel(); }
+    document.querySelectorAll('.nav-btn').forEach(b => b.style.display = 'none');
+    const aviso = document.getElementById('aviso-empleado');
+    if (aviso) { aviso.style.display = 'block'; aviso.textContent = '🛡️ Panel de Administración · CULTYRA'; aviso.style.background = 'rgba(99,102,241,0.12)'; aviso.style.borderColor = 'rgba(99,102,241,0.4)'; aviso.style.color = '#818cf8'; }
+    return;
+  }
+
   const ocultas = ['Mi Cultivo','Empleados','Registros','Productos','Información'];
   document.querySelectorAll('.nav-btn').forEach(b => {
     const t = b.textContent.trim();

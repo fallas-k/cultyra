@@ -1,5 +1,5 @@
 // Cultyra Service Worker — permite instalar la app y abrirla sin conexión
-const CACHE = 'cultyra-v8';
+const CACHE = 'cultyra-v12';
 const ARCHIVOS = [
   './index.html', './manifest.json', './css/styles.css?v=6', './img/logo.png',
   './img/icon-192.png', './img/icon-512.png',

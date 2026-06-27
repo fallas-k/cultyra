@@ -47,7 +47,7 @@ function compartirNativo(titulo, texto, url) {
   }
 }
 function compartirApp() {
-  compartirNativo('CULTYRA', 'Gestiona tus fincas con tecnología 🌱', 'https://cultyraagr.web.app');
+  compartirNativo('CULTYRA', 'Gestiona tus fincas con tecnología 🌱', 'https://cultyraagro.web.app');
 }
 function compartirDiagnostico() {
   compartirNativo('Diagnóstico CultIA', 'Mi agrónomo IA de Cultyra me dió este diagnóstico:', location.href);
@@ -746,7 +746,7 @@ function generarFacturaPDF(pedido) {
   doc.text(`TOTAL: ${typeof fmtColones==='function'?fmtColones(pedido.total):pedido.total}`, 14, y+4);
   doc.text(`Método de pago: ${pedido.metodoPago === 'tarjeta' ? 'Tarjeta' : 'SINPE Móvil'}`, 14, y+10);
   doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.setTextColor(120,120,120);
-  doc.text('CULTYRA · soportecultyra@gmail.com · +506 6205-3039 · cultyraagr.web.app', 14, 290);
+  doc.text('CULTYRA · soportecultyra@gmail.com · +506 6205-3039 · cultyraagro.web.app', 14, 290);
   doc.save(`cultyra-factura-${pedido.id}.pdf`);
   if (typeof toast === 'function') toast('Factura PDF descargada.', 'ok', { title: 'Factura' });
 }

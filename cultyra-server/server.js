@@ -19,160 +19,60 @@ const FIREBASE_PROJECT = process.env.FIREBASE_PROJECT_ID || '';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
 // ---------- IA · CultIA (asistente agronómico) ----------
-const CULTYRA_SYSTEM = `Eres CultIA, el asistente de inteligencia artificial de Cultyra, empresa costarricense de agrotecnología. Respondes siempre en español, de forma amigable, práctica y con emojis agrícolas 🌱.
+const CULTYRA_SYSTEM = `Eres CultIA, el asistente de inteligencia artificial de Cultyra, empresa costarricense de agrotecnología. Usas visión artificial multimodal y conocimiento agrícola global.
 
-Tu especialidad es la agricultura costarricense: plagas, enfermedades, manejo agronómico sostenible y productos biodegradables.
-
-Limita tus respuestas a temas agrícolas y de Cultyra. Si alguien pregunta algo fuera de agricultura, responde amablemente que solo puedes ayudar con temas del campo.
+IDIOMA: Siempre en español. Tono: amigable, práctico, con emojis agrícolas 🌱.
 
 ════════════════════════════════
-BASE DE CONOCIMIENTO — PLAGAS Y ENFERMEDADES POR CULTIVO
-(Costa Rica y Centroamérica)
+CAPACIDADES PRINCIPALES
 ════════════════════════════════
 
-🍅 TOMATE (Solanum lycopersicum)
-Plagas: Mosca blanca (Bemisia tabaci) — transmite virus; Minador de la hoja (Liriomyza spp.) — galerías en hojas; Trips (Frankliniella occidentalis) — raspaduras plateadas; Ácaro rojo (Tetranychus urticae) — telaraña fina; Polilla del tomate / Tuta absoluta — perforaciones en fruto y hojas; Gusano del fruto (Helicoverpa zea); Afidos/pulgones (Myzus persicae) — transmiten virus.
-Enfermedades: Tizón tardío (Phytophthora infestans) — manchas café con halo amarillo; Tizón temprano (Alternaria solani) — manchas concéntricas; Marchitez bacteriana (Ralstonia solanacearum); Virus del mosaico del tomate (ToMV); Virus de la cuchara (TYLCV, transmitido por mosca blanca); Botrytis (moho gris); Oídio (Leveillula taurica).
-Control biodegradable: extracto de neem, aceite de eucalipto, jabón potásico, Bacillus thuringiensis (Bt) para lepidópteros, Beauveria bassiana para mosca blanca y trips.
+1. ANÁLISIS VISUAL DE IMÁGENES 📸
+Cuando el agricultor sube una foto:
+- Identifica la planta, cultivo o problema visible
+- Diagnostica plagas, enfermedades, deficiencias nutricionales, daños por clima
+- Describe síntomas observados con precisión agronómica
+- Recomienda tratamiento inmediato y preventivo
+- Indica urgencia: ¿requiere acción inmediata o puede esperar?
+Si la imagen no es clara o no muestra suficiente detalle, pide otra foto más cercana.
 
-🌶️ CHILE / PIMIENTO (Capsicum spp.)
-Plagas: Trips (Frankliniella occidentalis); Mosca blanca; Afidos; Ácaro blanco (Polyphagotarsonemus latus) — deformación apical; Gusano del fruto (Helicoverpa spp.).
-Enfermedades: Phytophthora capsici — pudrición del tallo y raíz; Antracnosis (Colletotrichum spp.) — manchas hundidas en fruto; Botrytis; Virus del mosaico del pepino (CMV); Bakteriosis (Xanthomonas campestris).
-Control: neem, Trichoderma para control de hongos del suelo, Bt.
+2. CONOCIMIENTO AGRÍCOLA GLOBAL 🌍
+Conocés la agricultura de:
+- Costa Rica: café, banano, piña, caña, tomate, frijol, maíz, cacao, cítricos, aguacate, palma, melón, sandía, yuca, ñame, chayote y todos los cultivos costarricenses
+- Centroamérica: cultivos tropicales, maíz milpa, frijol negro, hortalizas de altura
+- México y Caribe: henequén, vainilla, cacao fino, mango Ataulfo, papaya maradol
+- Sudamérica: quinoa, papa andina, soja, mate, yerba, cacao nacional fino Ecuador
+- Europa: trigo, vid, olivo, tomate mediterráneo, lúpulo
+- Asia: arroz, té, soja japonesa, especias tropicales
+- África: cacao, café robusta, maní, sorgo, mijo
+- Norteamérica: maíz industrial, soja OGM, algodón, arándano
 
-🥬 LECHUGA (Lactuca sativa)
-Plagas: Babosas y caracoles — agujeros en hojas; Minador de la hoja; Trips; Pulgones (Nasonovia ribisnigri); Mosca blanca.
-Enfermedades: Mildiu velloso (Bremia lactucae) — polvo blanco en envés; Botrytis — pudrición gris; Esclerotinia — pudrición blanca algodonosa; Nervación negra (Xanthomonas campestris).
-Control: cal agrícola para babosas, jabón potásico, cobre para hongos, manejo del riego.
+Para CADA región conocés: variedades, plagas típicas, enfermedades, clima ideal, fertilización, cosecha.
 
-🥦 BRÓCOLI / COLIFLOR / REPOLLO (Brassicaceae)
-Plagas: Palomilla dorso de diamante (Plutella xylostella) — orificios en hojas; Oruga de la col (Pieris rapae); Afidos de la col (Brevicoryne brassicae); Trips; Mosca de la col (Delia radicum) — raíces.
-Enfermedades: Hernia de la col (Plasmodiophora brassicae) — agallas en raíz; Mildiu velloso (Peronospora parasitica); Alternaria — manchas negras; Pudrición blanda bacteriana (Pectobacterium carotovorum).
-Control: Bt para lepidópteros, rotación de cultivos, cal para hernia, Metarhizium.
-
-🥕 ZANAHORIA (Daucus carota)
-Plagas: Mosca de la zanahoria (Psila rosae) — galerías en raíz; Nematodos (Meloidogyne spp.) — nódulos en raíz; Afidos.
-Enfermedades: Alternaria (Alternaria dauci) — tizón de la hoja; Oidio; Erwinia — pudrición blanda.
-Control: nematodos benéficos (Steinernema) para mosca, Trichoderma en suelo.
-
-🧅 CEBOLLA / AJO (Allium spp.)
-Plagas: Trips de la cebolla (Thrips tabaci) — puntos plateados; Minador; Mosca de la cebolla (Delia antiqua).
-Enfermedades: Mildiu (Peronospora destructor) — moho violáceo; Mancha púrpura (Alternaria porri); Botrytis (podredumbre del cuello); Fusarium (raíz rosada).
-Control: azufre para mildiu, cobre, manejo del riego.
-
-🍆 BERENJENA (Solanum melongena)
-Plagas: Araña roja; Mosca blanca; Afidos; Escarabajo de la papa (Leptinotarsa decemlineata).
-Enfermedades: Phytophthora; Verticillium; Fusarium; Alternaria.
-
-🥒 PEPINO / ZUCCHINI / MELÓN / SANDÍA (Cucurbitaceae)
-Plagas: Mosca de la fruta (Anastrepha spp.) — galería en fruto; Ácaro rojo; Mosca blanca; Trips; Minador; Afidos; Barrenador del tallo (Melittia cucurbitae).
-Enfermedades: Mildiu polvoso (Podosphaera xanthii) — polvo blanco; Mildiu velloso (Pseudoperonospora cubensis); Antracnosis; Fusarium (marchitez); Virus del mosaico de la sandía (WMV).
-Control: aceite de neem, azufre para oídio, cobre, eliminación de plantas infectadas.
-
-🫘 FRIJOL (Phaseolus vulgaris)
-Plagas: Mosca blanca; Trips; Afidos; Cigarrón (Empoasca kraemeri) — bordes quemados; Gorgojo del frijol (Acanthoscelides obtectus) — postcosecha; Barrenador del tallo.
-Enfermedades: Antracnosis (Colletotrichum lindemuthianum); Mancha angular (Phaeoisariopsis griseola); Mustia hilachosa (Thanatephorus cucumeris); Roya (Uromyces appendiculatus); Mosaico dorado (BGMV, por mosca blanca).
-Control: Bt, neem, cobre, variedades resistentes.
-
-🌽 MAÍZ (Zea mays)
-Plagas: Gusano cogollero (Spodoptera frugiperda) — el principal en CR; Gusano del elote (Helicoverpa zea); Pulgón del maíz (Rhopalosiphum maidis); Barrenador del tallo (Diatraea saccharalis).
-Enfermedades: Tizón foliar (Helminthosporium maydis); Roya común (Puccinia sorghi); Pudrición del tallo (Fusarium moniliforme); Carbón (Ustilago maydis).
-Control: Bt, Beauveria bassiana para cogollero, Trichoderma en semilla.
-
-🍓 FRESA (Fragaria × ananassa)
-Plagas: Ácaro de la fresa (Phytonemus pallidus); Araña roja; Trips; Afidos; Babosas.
-Enfermedades: Botrytis (moho gris) — el más dañino en fruta; Oídio (Sphaerotheca macularis); Antracnosis; Marchitez por Phytophthora; Verticillium.
-Control: Trichoderma, azufre, cal para babosas, manejo de humedad.
-
-🍌 BANANO / PLÁTANO (Musa spp.)
-Plagas: Picudo negro del banano (Cosmopolites sordidus) — el más destructivo; Nematodos (Radopholus similis, Pratylenchus coffeae); Trips de la mancha roja (Chaetanaphothrips signipennis).
-Enfermedades: Sigatoka negra (Mycosphaerella fijiensis) — la principal enfermedad en CR; Sigatoka amarilla (M. musicola); Moko bacteriano (Ralstonia solanacearum raza 2); Mal de Panamá — Fusarium raza 4 TR4.
-Control: manejo integrado, eliminar hojas enfermas, aceite mineral + fungicidas sistémicos para sigatoka.
-
-🍍 PIÑA (Ananas comosus)
-Plagas: Cochinilla de la piña (Dysmicoccus brevipes) — transmite marchitez; Nematodos; Sinfílidos.
-Enfermedades: Marchitez (Pineapple mealybug wilt-associated virus — PMWaV); Pudrición del cogollo (Phytophthora cinnamomi); Pudrición negra del pedúnculo.
-Control: control de hormigas (que protegen cochinillas), Trichoderma, drenaje adecuado.
-
-☕ CAFÉ (Coffea arabica)
-Plagas: Broca del café (Hypothenemus hampei) — la principal plaga en CR; Minador de la hoja (Leucoptera coffeella); Cochinillas; Nematodos.
-Enfermedades: Roya del café (Hemileia vastatrix) — mancha amarilla polvosa en hoja; Antracnosis (Colletotrichum); Ojo de gallo (Mycena citricolor); Mancha de hierro (Cercospora coffeicola).
-Control: trampas con alcohol etílico para broca, Beauveria bassiana, cobre para roya.
-
-🍊 CÍTRICOS — Naranja, Limón, Mandarina (Citrus spp.)
-Plagas: Psílido asiático de los cítricos (Diaphorina citri) — vector del HLB; Escama marrón (Coccus hesperidum); Minador de la hoja cítrica (Phyllocnistis citrella); Mosca de la fruta (Anastrepha spp.); Afidos; Ácaro de la roya (Phyllocoptruta oleivora).
-Enfermedades: Greening / HLB (Candidatus Liberibacter asiaticus) — la más grave, sin cura; Antracnosis; Gomosis (Phytophthora); Melanosis (Diaporthe citri); Tristeza de los cítricos (CTV).
-Control: control estricto del psílido para prevenir HLB, aceite mineral, cobre.
-
-🥭 MANGO (Mangifera indica)
-Plagas: Trips del mango (Scirtothrips mangiferae); Escamas; Cochinillas; Mosca de la fruta.
-Enfermedades: Antracnosis (Colletotrichum gloeosporioides) — manchas negras en fruto; Oídio; Malformación floral (Fusarium mangiferae).
-Control: neem, cobre, manejo de cosecha y postcosecha.
-
-🍫 CACAO (Theobroma cacao)
-Plagas: Monalonion (Monalonion dissimulatum) — picaduras en mazorca; Trips; Escamas.
-Enfermedades: Moniliasis / Pudrición parda (Moniliophtora roreri) — la principal en CR; Mazorca negra (Phytophthora palmivora); Escoba de bruja (Moniliophtora perniciosa).
-Control: poda sanitaria, eliminación de mazorcas enfermas, cobre, Trichoderma.
-
-🥑 AGUACATE (Persea americana)
-Plagas: Barrenador del hueso (Heilipus lauri); Ácaros; Trips; Escamas.
-Enfermedades: Pudrición de raíz (Phytophthora cinnamomi) — la más grave; Antracnosis; Cercospora.
-Control: portainjertos resistentes, Trichoderma, drenaje, fosfonatos.
+3. ESPECIALIDAD COSTA RICA 🇨🇷
+Conocés en detalle:
+- SENASA, MAG, CNP, INTA como instituciones de referencia
+- Pisos altitudinales: Pacífico Central, Caribe, Valle Central, Zona Norte, Brunca
+- Climas: tropical húmedo, bosque montano, sabana tropical
+- Productos del catálogo Cultyra: los 30 productos con precios en colones
+- Certificaciones: SENASA, orgánico TICO, Sello Azul Bandera
 
 ════════════════════════════════
-CATÁLOGO COMPLETO DE PRODUCTOS CULTYRA (30 productos)
+ANÁLISIS DE IMÁGENES — PROTOCOLO
 ════════════════════════════════
+Al recibir una foto:
+1. Describí brevemente lo que ves (planta, parte afectada, síntomas)
+2. Diagnóstico más probable (plaga, hongo, bacteria, deficiencia, daño físico)
+3. Diagnósticos alternativos si hay ambigüedad
+4. Tratamiento recomendado (preferir biodegradables de Cultyra)
+5. Medidas preventivas
+6. Urgencia: 🔴 Urgente (actuar en 24h) · 🟡 Moderada (esta semana) · 🟢 Leve (monitorear)
 
-🔧 SENSORES / IoT
-1.  Sensor de Humedad Pro — ₡45.500 — Monitoreo WiFi de humedad del suelo en tiempo real.
-2.  Kit Solar + Sensor Temp — ₡74.000 — Temperatura, luz solar, humedad ambiental. Batería solar.
-3.  Cámara de Vigilancia Campo — ₡102.000 — 2K, visión nocturna, alertas de movimiento.
-4.  Nodo ESP32 Agro — ₡18.500 — Microcontrolador preconfigurado para conectar sensores a Cultyra.
-5.  Sensor de pH del Suelo — ₡32.000 — pH en tiempo real (rango 3–9), compatible con ESP32.
-6.  Pluviómetro Digital IoT — ₡41.000 — Lluvia acumulada enviada a la app.
-7.  Sensor CO₂ y Calidad de Aire — ₡58.000 — CO₂ + temperatura + humedad para invernaderos.
-8.  Kit Riego Automatizado — ₡135.000 — Electroválvulas + sensores + ESP32. Riego inteligente.
-9.  Panel Solar 20W para Campo — ₡49.000 — Alimenta nodos IoT. Incluye regulador y soporte.
-10. Gateway LoRa Cultyra — ₡88.000 — Comunicación hasta 5 km sin WiFi.
-
-🌿 BIODEGRADABLES
-11. Abono Bocashi Premium — ₡9.200 — Fermentado con microorganismos benéficos. 25 kg.
-12. Extracto de Neem Concentrado — ₡12.300 — Insecticida/fungicida natural. 1 L.
-13. Plaguicida a Base de Piretrina — ₡15.900 — Masticadores y chupadores. 500 ml. Cert. SENASA.
-14. Jabón Potásico Agrícola — ₡8.500 — Pulgones, mosca blanca, cochinillas. 1 L.
-15. Bacillus thuringiensis (Bt) — ₡11.200 — Orugas y gusanos (cogollero, palomilla). 100 g.
-16. Beauveria bassiana — ₡13.800 — Mosca blanca, trips, broca, picudo. 250 g.
-17. Trichoderma spp. — ₡10.500 — Protege raíces de Fusarium, Pythium, Rhizoctonia.
-18. Azufre Micronizado 80% — ₡6.800 — Oídio y ácaros rojos. 1 kg.
-19. Caldo Bordelés (Cobre) — ₡9.800 — Sigatoka, antracnosis, enfermedades foliares. 1 L.
-20. Aceite de Eucalipto Agrícola — ₡11.000 — Trips, minadores, cochinillas. 500 ml.
-21. Humus de Lombriz — ₡7.400 — Fertilizante orgánico, mejora suelo y microbiota. 10 kg.
-22. Melaza Agrícola — ₡5.200 — Potencia microorganismos benéficos. 5 L.
-23. Biofertilizante Foliar Cultyra — ₡14.500 — Micronutrientes + fijadores N + solubilizadores P. 1 L.
-24. Cal Agrícola Hidratada — ₡4.300 — Babosas, pH, desinfección de suelo. 25 kg.
-25. Trampa Amarilla Adhesiva x10 — ₡5.800 — Mosca blanca, minadores, afidos. 10 unidades.
-
-👨‍🌾 SERVICIOS
-26. Visita Técnica Agronómica — ₡33.300 — Diagnóstico presencial, ingeniero agrónomo, 3 h.
-27. Plan Monitoreo Mensual — ₡25.000/mes — Sensores + reporte + recomendaciones de IA.
-28. Instalación de Nodos IoT — ₡55.000 — Hasta 5 nodos ESP32 instalados y configurados.
-29. Capacitación Uso de la App — ₡18.000 — Sesión grupal hasta 10 personas.
-30. Plan Premium Anual — ₡180.000 — Monitoreo 24/7 + reportes + soporte + 2 visitas técnicas.
-
-Cuando un agricultor pregunta qué producto usar, recomiéndalo por nombre y precio. Menciona siempre que puede comprarlo directamente en la sección "Productos" de la app Cultyra.
+Si la foto muestra suelo: evalúa color, textura, humedad aparente, estructura.
+Si muestra frutos: evalúa madurez, daños, calidad postcosecha.
+Si muestra flores o raíces: evalúa estado reproductivo o sanitario.`;
 
 
-════════════════════════════════
-CÓMO IDENTIFICAR Y RESPONDER CONSULTAS
-════════════════════════════════
-Cuando el agricultor describe un síntoma:
-1. Identifica el cultivo afectado.
-2. Describe las posibles causas (plaga o enfermedad más probable primero).
-3. Recomienda productos biodegradables de Cultyra.
-4. Da consejos de manejo preventivo (rotación, drenaje, podas, trampas).
-5. Indica cuándo es urgente llamar a un agrónomo.
-
-Siempre responde de forma clara, práctica y en español costarricense.`;
 
 
 // Límite simple de uso por usuario (evita que una sola cuenta agote la cuota de la API)
@@ -219,8 +119,99 @@ db.exec(`CREATE INDEX IF NOT EXISTS idx_reg_uid ON registros(firebase_uid);`);
 
 // ---------- APP ----------
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// ══════════════════════════════════════════════════════
+// SEGURIDAD · ISO 27001 / OWASP Top 10
+// ══════════════════════════════════════════════════════
+
+const helmet      = require('helmet');
+const rateLimit   = require('express-rate-limit');
+const { body, validationResult } = require('express-validator');
+const morgan      = require('morgan');
+const compression = require('compression');
+const hpp         = require('hpp');
+
+// 1. HTTP Security Headers (OWASP A05 · ISO 27001 A.14.1)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc:  ["'self'"],
+      styleSrc:   ["'self'", "'unsafe-inline'"],
+      imgSrc:     ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://api.anthropic.com', 'https://api.open-meteo.com'],
+      frameSrc:   ["'none'"],
+      objectSrc:  ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+}));
+
+// 2. CORS — Solo orígenes autorizados (OWASP A01)
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'https://cultyraagro.web.app,https://cultyraagr.web.app,http://localhost:5000').split(',');
+app.use(require('cors')({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origen no autorizado: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
+
+// 3. Rate Limiting — Protección contra fuerza bruta (OWASP A04 · ISO 27001 A.12.6)
+const limiterGeneral = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas solicitudes. Intenta en 15 minutos.' },
+});
+const limiterIA = rateLimit({
+  windowMs: 60 * 1000, // 1 min
+  max: 10,
+  message: { error: 'Límite de solicitudes a la IA alcanzado. Espera 1 minuto.' },
+});
+const limiterAuth = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 min
+  max: 20,
+  message: { error: 'Demasiados intentos. Intenta en 10 minutos.' },
+});
+app.use(limiterGeneral);
+app.use('/api/ia', limiterIA);
+
+// 4. Parseo con límite de tamaño (OWASP A04 — DOS Prevention)
+app.use(express.json({ limit: '50kb' }));
+app.use(express.urlencoded({ extended: false, limit: '50kb' }));
+
+// 5. Protección contra HTTP Parameter Pollution (OWASP A03)
+app.use(hpp());
+
+// 6. Compresión (mejora rendimiento, reduce superficie)
+app.use(compression());
+
+// 7. Logging de acceso estructurado (ISO 27001 A.12.4 — Audit Logs)
+app.use(morgan(':date[iso] :method :url :status :res[content-length] - :response-time ms - :remote-addr'));
+
+// 8. Cabecera de versión oculta (OWASP A05)
+app.disable('x-powered-by');
+
+// 9. Función helper de validación de Express-validator
+function validar(req, res) {
+  const errs = validationResult(req);
+  if (!errs.isEmpty()) {
+    res.status(422).json({ error: 'Datos inválidos', detalles: errs.array().map(e => e.msg) });
+    return false;
+  }
+  return true;
+}
+
+// 10. Sanitización básica de texto (prevención XSS)
+function sanitize(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"']/g, c => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;'}[c]));
+}
 
 // ---------- VERIFICACIÓN DE TOKEN FIREBASE (sin Admin SDK) ----------
 // Firebase firma los ID tokens con claves RSA publicadas por Google.
@@ -298,11 +289,124 @@ app.post('/api/ia', async (req, res) => {
     return res.status(400).json({ error: 'Se requiere el campo "messages".' });
   }
 
-  // Solo enviamos los últimos mensajes y recortamos su tamaño para controlar costos
-  const messages = entrada.slice(-12).map(m => ({
-    role: m.role === 'assistant' ? 'assistant' : 'user',
-    content: String(m.content ?? '').slice(0, 4000)
-  }));
+  // ── Construir mensajes compatibles con la API multimodal de Anthropic ──
+  // Cada mensaje puede tener: { role, content (string) } o
+  // { role, content (array de bloques: text + image) }
+  const messages = entrada.slice(-10).map(m => {
+    const role = m.role === 'assistant' ? 'assistant' : 'user';
+
+    // Si el mensaje trae imagen (base64)
+    if (m.imagen) {
+      // Validar que la imagen no sea demasiado grande (max ~4 MB base64 ≈ 3 MB real)
+      if (m.imagen.length > 5_500_000) {
+        return { role, content: [{ type: 'text', text: String(m.content || 'Analiza esta imagen.').slice(0, 2000) }] };
+      }
+
+      // Detectar tipo MIME de la imagen
+      let mediaType = 'image/jpeg';
+      if (m.imagen.startsWith('/9j/')) mediaType = 'image/jpeg';
+      else if (m.imagen.startsWith('iVBORw')) mediaType = 'image/png';
+      else if (m.imagen.startsWith('R0lG')) mediaType = 'image/gif';
+      else if (m.imagen.startsWith('UklG')) mediaType = 'image/webp';
+      if (m.mimeType) mediaType = m.mimeType;
+
+      return {
+        role,
+        content: [
+          {
+            type: 'image',
+            source: { type: 'base64', media_type: mediaType, data: m.imagen }
+          },
+          {
+            type: 'text',
+            text: String(m.content || '¿Qué ves en esta imagen? Analízala desde el punto de vista agronómico.').slice(0, 2000)
+          }
+        ]
+      };
+    }
+
+    // Mensaje de solo texto
+    return { role, content: String(m.content ?? '').slice(0, 4000) };
+  });
+
+  // ── Construir contexto personalizado de la finca del usuario (RAG) ──
+  let contextoFinca = '';
+  try {
+    const filaUser = db.prepare('SELECT datos FROM datos_usuario WHERE firebase_uid = ?').get(u.uid);
+    if (filaUser?.datos) {
+      const datos = JSON.parse(filaUser.datos);
+
+      // Fecha y hora actual en Costa Rica
+      const ahora = new Date().toLocaleString('es-CR', { timeZone: 'America/Costa_Rica',
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      // Fincas
+      const fincas = Array.isArray(datos.fincas) ? datos.fincas : [];
+      const fincasTxt = fincas.length
+        ? fincas.map(f => `• ${f.nombre} — ${f.cultivo || 'cultivo no especificado'}, ${f.area || '?'} ha, ${f.ubicacion || 'ubicación no especificada'}`).join('\n')
+        : 'Sin fincas registradas.';
+
+      // Tareas pendientes
+      const tareas = Array.isArray(datos.tasks) ? datos.tasks.filter(t => !t.done) : [];
+      const tareasTxt = tareas.length
+        ? tareas.slice(0, 8).map(t => `• [${t.priority || 'media'}] ${t.text}${t.fecha ? ` (vence: ${t.fecha})` : ''} — Finca: ${t.finca || 'General'}`).join('\n')
+        : 'Sin tareas pendientes.';
+
+      // Empleados
+      const empleados = Array.isArray(datos.empleados) ? datos.empleados : [];
+      const empTxt = empleados.length
+        ? empleados.map(e => `• ${e.nombre} (${e.rol || 'peón'})`).join(', ')
+        : 'Sin empleados registrados.';
+
+      // Últimos registros contables
+      const registros = db.prepare(
+        'SELECT tipo, monto, nota, fecha FROM registros WHERE firebase_uid = ? ORDER BY fecha DESC LIMIT 5'
+      ).all(u.uid);
+      const regTxt = registros.length
+        ? registros.map(r => `• ${r.fecha || '?'}: ${r.tipo} ₡${Number(r.monto).toLocaleString('es-CR')}${r.nota ? ` — ${r.nota}` : ''}`).join('\n')
+        : 'Sin registros contables recientes.';
+
+      // Resumen financiero rápido
+      const ventas  = registros.filter(r => r.tipo === 'venta').reduce((s, r) => s + r.monto, 0);
+      const gastos  = registros.filter(r => r.tipo === 'gasto').reduce((s, r) => s + r.monto, 0);
+
+      contextoFinca = `
+════════════════════════════════
+CONTEXTO PERSONAL DEL AGRICULTOR
+(Usar estos datos para personalizar las respuestas)
+════════════════════════════════
+📅 Fecha y hora: ${ahora} (Costa Rica)
+👤 Usuario: ${u.uid.slice(0, 8)}...
+
+🌾 MIS FINCAS (${fincas.length}):
+${fincasTxt}
+
+📋 TAREAS PENDIENTES (${tareas.length}):
+${tareasTxt}
+
+👷 MI EQUIPO:
+${empTxt}
+
+💰 ÚLTIMOS MOVIMIENTOS:
+${regTxt}
+Ventas recientes: ₡${ventas.toLocaleString('es-CR')} | Gastos recientes: ₡${gastos.toLocaleString('es-CR')}
+
+════════════════════════════════
+Cuando el agricultor pregunte sobre "mi finca", "mis tomates", "mis empleados", etc., 
+usa estos datos reales. Si menciona un nombre de finca, búscalo en la lista.
+Si pregunta por finanzas, usa los registros reales.
+════════════════════════════════`;
+    }
+  } catch(ctxErr) {
+    console.warn('No se pudo cargar contexto de finca:', ctxErr.message);
+  }
+
+  // Sistema personalizado = prompt base + contexto de la finca
+  const systemPersonalizado = CULTYRA_SYSTEM + contextoFinca;
+
+  // ── Usar claude-sonnet para visión (haiku no soporta imágenes) ──
+  const tieneImagen = entrada.some(m => m.imagen);
+  const modelo = tieneImagen ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001';
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
@@ -313,9 +417,9 @@ app.post('/api/ia', async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
-        system: CULTYRA_SYSTEM,
+        model: modelo,
+        max_tokens: 1200,
+        system: systemPersonalizado,
         messages
       })
     });
@@ -325,7 +429,7 @@ app.post('/api/ia', async (req, res) => {
       return res.status(502).json({ error: data?.error?.message || 'La IA no respondió correctamente.' });
     }
     const texto = (data.content || []).map(c => c.text || '').join('');
-    res.json({ texto });
+    res.json({ texto, modelo });
   } catch (e) {
     console.error('Error llamando a la IA:', e);
     res.status(500).json({ error: 'No se pudo conectar con la IA.' });
@@ -346,7 +450,9 @@ app.get('/api/datos', async (req, res) => {
 app.put('/api/datos', async (req, res) => {
   const u = await autenticar(req, res); if (!u) return;
   const datos = JSON.stringify(req.body?.datos ?? {});
-  if (datos.length > 4_000_000) return res.status(413).json({ error: 'Datos demasiado grandes.' });
+  if (datos.length > 2_000_000) return res.status(413).json({ error: 'Datos demasiado grandes (máx. 2 MB).' });
+  // Validar que sea JSON válido antes de guardar
+  try { JSON.parse(datos); } catch(e) { return res.status(400).json({ error: 'Formato de datos inválido.' }); }
   db.prepare(`
     INSERT INTO datos_usuario (firebase_uid, datos, actualizado)
     VALUES (?, ?, datetime('now'))
@@ -365,22 +471,24 @@ app.get('/api/registros', async (req, res) => {
   res.json(rows);
 });
 
-app.post('/api/registros', async (req, res) => {
+app.post('/api/registros',
+  body('tipo').isIn(['cosecha','venta','gasto']).withMessage('Tipo inválido'),
+  body('monto').isFloat({ min: 0.01, max: 99999999 }).withMessage('Monto fuera de rango'),
+  body('finca').optional().isLength({ max: 120 }).trim().escape(),
+  body('nota').optional().isLength({ max: 300 }).trim().escape(),
+  body('fecha').optional().isISO8601().withMessage('Fecha inválida'),
+  async (req, res) => {
   const u = await autenticar(req, res); if (!u) return;
+  if (!validar(req, res)) return;
   const { finca, tipo, monto, nota, fecha } = req.body || {};
-  if (!['cosecha','venta','gasto'].includes(tipo))
-    return res.status(400).json({ error: 'Tipo inválido. Usa: cosecha, venta o gasto.' });
   const m = parseFloat(monto);
-  if (!m || m <= 0) return res.status(400).json({ error: 'Monto debe ser mayor a 0.' });
-
-  const f     = (finca || 'General').trim().substring(0, 120);
-  const n     = (nota  || '').trim().substring(0, 300);
+  const f = sanitize((finca || 'General').trim().substring(0, 120));
+  const n = sanitize((nota  || '').trim().substring(0, 300));
   const stmt  = fecha
     ? db.prepare('INSERT INTO registros (firebase_uid,finca,tipo,monto,nota,fecha) VALUES (?,?,?,?,?,?)')
         .run(u.uid, f, tipo, m, n, String(fecha).substring(0, 25))
     : db.prepare('INSERT INTO registros (firebase_uid,finca,tipo,monto,nota) VALUES (?,?,?,?,?)')
         .run(u.uid, f, tipo, m, n);
-
   res.status(201).json(
     db.prepare('SELECT id,finca,tipo,monto,nota,fecha FROM registros WHERE id=?').get(stmt.lastInsertRowid)
   );
@@ -431,6 +539,18 @@ app.get('/api/salud', (_req, res) => res.json({
   ia:        ANTHROPIC_API_KEY ? 'configurada' : '⚠️ sin configurar (falta ANTHROPIC_API_KEY)',
   registros: db.prepare('SELECT COUNT(*) AS n FROM registros').get().n
 }));
+
+// ── 404 ───────────────────────────────────────────────────────
+app.use((_req, res) => res.status(404).json({ error: 'Ruta no encontrada.' }));
+
+// ── Error handler global (no expone detalles internos) ────────
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  const status = err.status || 500;
+  const msg    = status < 500 ? err.message : 'Error interno del servidor.';
+  console.error(`[ERROR ${status}]`, err.message);
+  res.status(status).json({ error: msg });
+});
 
 app.listen(PORT, () => {
   console.log('🌱 Servidor Cultyra (solo sync) en http://localhost:' + PORT);

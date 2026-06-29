@@ -97,113 +97,41 @@ async function removeFinca(i) {
 let fincaMap = null, drawnLayer = null, drawnGroup = null;
 function initFincaMap() {
   if (fincaMap) { setTimeout(()=>fincaMap.invalidateSize(), 250); return; }
-
-  fincaMap = L.map('finca-map', { zoomControl: false }).setView([9.7489, -83.7534], 8);
-
-  // Capas base
-  const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '© Esri Satellite', maxZoom: 20
-  });
-  const hibrido = L.layerGroup([
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom:20 }),
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { opacity: 0.35, maxZoom:19 })
-  ]);
-  const calles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap', maxZoom: 19
-  });
-  satelite.addTo(fincaMap);
-
-  // Controles
-  L.control.zoom({ position: 'topright' }).addTo(fincaMap);
-  L.control.layers(
-    { '🛰️ Satélite': satelite, '🛰️+🗺️ Híbrido': hibrido, '🗺️ Calles': calles },
-    {}, { position: 'topright', collapsed: false }
-  ).addTo(fincaMap);
-
-  // GPS — centrar en ubicación actual
-  if (L.control.locate) {
-    L.control.locate({
-      position: 'topright',
-      strings: { title: 'Mi ubicación' },
-      flyTo: true,
-      showPopup: false,
-      locateOptions: { maxZoom: 16 }
-    }).addTo(fincaMap);
-  }
-
-  // Grupo de dibujo
+  fincaMap = L.map('finca-map').setView([9.7489, -83.7534], 8); // Costa Rica
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20}).addTo(fincaMap);
   drawnGroup = new L.FeatureGroup();
   fincaMap.addLayer(drawnGroup);
-
-  // Control de dibujo visual con barra de herramientas
-  const drawControl = new L.Control.Draw({
-    position: 'topleft',
-    draw: {
-      polygon: { allowIntersection: false, showArea: true, shapeOptions: { color:'#34c759', fillColor:'#34c759', fillOpacity:0.2, weight:2.5 } },
-      polyline: false, rectangle: false, circle: false, marker: false, circlemarker: false
-    },
-    edit: { featureGroup: drawnGroup, remove: true }
-  });
-  fincaMap.addControl(drawControl);
-
-  // Tooltips en español
+  // Textos en español para las guías de dibujo
   L.drawLocal.draw.handlers.polygon.tooltip = {
-    start: '📍 Toque para empezar a dibujar su terreno',
-    cont: '📍 Toque para continuar el contorno',
-    end: '✅ Toque el primer punto para cerrar el área'
+    start: 'Toque el mapa para empezar a dibujar su terreno',
+    cont: 'Toque para continuar el contorno',
+    end: 'Toque el primer punto para cerrar el área'
   };
-  L.drawLocal.draw.toolbar.actions = { title:'Cancelar', text:'Cancelar' };
-  L.drawLocal.draw.toolbar.finish  = { title:'Terminar', text:'Terminar' };
-  L.drawLocal.draw.toolbar.undo    = { title:'Borrar último punto', text:'Deshacer' };
-  L.drawLocal.edit.toolbar.actions.save   = { title:'Guardar cambios', text:'Guardar' };
-  L.drawLocal.edit.toolbar.actions.cancel = { title:'Cancelar', text:'Cancelar' };
-  L.drawLocal.edit.toolbar.actions.clearAll = { title:'Borrar todo', text:'Borrar todo' };
-
+  L.drawLocal.draw.handlers.polyline = L.drawLocal.draw.handlers.polyline || {};
+  L.drawLocal.draw.toolbar.actions = {title:'Cancelar dibujo', text:'Cancelar'};
+  L.drawLocal.draw.toolbar.finish = {title:'Terminar dibujo', text:'Terminar'};
+  L.drawLocal.draw.toolbar.undo = {title:'Borrar último punto', text:'Borrar último punto'};
   fincaMap.on(L.Draw.Event.CREATED, e => {
     drawnGroup.clearLayers();
     drawnLayer = e.layer;
     drawnGroup.addLayer(drawnLayer);
     calcularArea();
-    document.getElementById('btn-dibujar').textContent = '✏️ Redibujar terreno';
+    document.getElementById('btn-dibujar').textContent = '✏️ Dibujar de nuevo';
   });
-  fincaMap.on(L.Draw.Event.EDITED, () => calcularArea());
-  fincaMap.on(L.Draw.Event.DELETED, () => {
-    drawnLayer = null;
-    document.getElementById('finca-area').value = '';
-  });
-
-  // Búsqueda por coordenadas (simple, sin API externa)
-  const searchCtrl = L.Control.extend({
-    options: { position: 'topleft' },
-    onAdd() {
-      const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-      div.style.cssText = 'background:#1b3a1f;padding:4px 8px;border:1px solid rgba(52,199,89,0.3)';
-      div.innerHTML = '<input id="map-coord-search" placeholder="Lat, Lng (ej: 9.748,-83.75)" style="background:transparent;border:none;color:#c8f0c8;font-size:12px;width:180px;outline:none" />';
-      L.DomEvent.disableClickPropagation(div);
-      div.querySelector('input').addEventListener('keydown', e => {
-        if (e.key !== 'Enter') return;
-        const [lat, lng] = e.target.value.split(',').map(Number);
-        if (!isNaN(lat) && !isNaN(lng)) { fincaMap.setView([lat, lng], 16); toast('Mapa centrado en ' + lat + ', ' + lng); }
-        else toast('Escribe coordenadas válidas (lat, lng)', 'error');
-      });
-      return div;
-    }
-  });
-  fincaMap.addControl(new searchCtrl());
-
-  setTimeout(()=>fincaMap.invalidateSize(), 300);
+  setTimeout(()=>fincaMap.invalidateSize(), 250);
 }
 let dibujoActivo = null;
 function empezarDibujo() {
   if (!fincaMap) return;
-  // Activar la herramienta de polígono del DrawControl
-  fincaMap.eachLayer(l => { if (l._toolbars) Object.values(l._toolbars).forEach(t => t && t.disable && t.disable()); });
-  new L.Draw.Polygon(fincaMap, {
+  if (dibujoActivo) dibujoActivo.disable();
+  dibujoActivo = new L.Draw.Polygon(fincaMap, {
     allowIntersection: false,
-    shapeOptions: { color:'#34c759', fillColor:'#34c759', fillOpacity:0.2, weight:2.5 }
-  }).enable();
+    shapeOptions: {color:'#2d6a4f', fillColor:'#52b788', fillOpacity:0.35}
+  });
+  dibujoActivo.enable();
 }
 function borrarDibujo() {
+  if (dibujoActivo) { dibujoActivo.disable(); dibujoActivo = null; }
   if (drawnGroup) drawnGroup.clearLayers();
   drawnLayer = null;
   document.getElementById('finca-area').value = '';
@@ -215,71 +143,37 @@ function calcularArea() {
   const m2 = L.GeometryUtil.geodesicArea(latlngs);
   const ha = (m2 / 10000).toFixed(2);
   document.getElementById('finca-area').value = ha;
-  toast(`📐 Área calculada: ${ha} hectáreas`);
 }
 function openFincaModal() {
   document.getElementById('add-finca-modal').classList.add('open');
-  setTimeout(initFincaMap, 150);
+  setTimeout(initFincaMap, 100);
   cargarProvincias();
 }
 
-// ===== MAPA GENERAL DE FINCAS (Mi Cultivo) =====
+// ===== MAPA GENERAL DE FINCAS =====
 let mapaGeneral = null, capaFincas = null;
 function initMapaGeneral() {
   if (!mapaGeneral) {
-    mapaGeneral = L.map('mapa-general', { zoomControl: false }).setView([9.7489, -83.7534], 8);
-
-    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: '© Esri Satellite', maxZoom: 20
-    });
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap', maxZoom: 19
-    });
-    sat.addTo(mapaGeneral);
-
-    L.control.zoom({ position: 'topright' }).addTo(mapaGeneral);
-    L.control.layers({ '🛰️ Satélite': sat, '🗺️ Calles': osm }, {}, { position: 'topright', collapsed: false }).addTo(mapaGeneral);
-
-    // GPS en el mapa general también
-    if (L.control.locate) {
-      L.control.locate({
-        position: 'topright',
-        strings: { title: 'Mi ubicación' },
-        flyTo: true, showPopup: false,
-        locateOptions: { maxZoom: 16 }
-      }).addTo(mapaGeneral);
-    }
-
+    mapaGeneral = L.map('mapa-general').setView([9.7489, -83.7534], 8);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO', subdomains: 'abcd', maxZoom: 20
+    }).addTo(mapaGeneral);
     capaFincas = L.featureGroup().addTo(mapaGeneral);
   }
-  setTimeout(()=>{ mapaGeneral.invalidateSize(); pintarFincas(); }, 250);
+  setTimeout(()=>{ mapaGeneral.invalidateSize(); pintarFincas(); }, 200);
 }
 function pintarFincas() {
   if (!capaFincas) return;
   capaFincas.clearLayers();
   let hayPoligonos = false;
-  const colores = ['#34c759','#30d158','#32ade6','#ffd60a','#ff9f0a','#ff6961'];
-  fincas.forEach((f, idx) => {
-    const color = colores[idx % colores.length];
-    const pendF = tareasEmpleado.filter(t => !t.done && tasks.concat([]).some(tt => !tt.done && tt.finca === f.nombre)).length +
-                  tasks.filter(t => !t.done && t.finca === f.nombre).length;
-    const popup = `
-      <div style="min-width:160px;font-family:'DM Sans',sans-serif">
-        <div style="font-weight:700;font-size:14px;margin-bottom:4px">🌾 ${f.nombre}</div>
-        <div style="font-size:12px;color:#555;margin-bottom:6px">📍 ${f.ubicacion||''}</div>
-        <div style="display:flex;gap:8px;font-size:12px">
-          <span style="background:#e8f5e9;color:#1b5e20;padding:2px 8px;border-radius:99px">🌱 ${f.cultivo}</span>
-          <span style="background:#e3f2fd;color:#0d47a1;padding:2px 8px;border-radius:99px">📐 ${f.area} ha</span>
-        </div>
-        ${pendF ? `<div style="margin-top:6px;font-size:11px;color:#e65100">⚠️ ${pendF} tarea(s) pendiente(s)</div>` : ''}
-      </div>`;
+  fincas.forEach(f => {
     if (f.coords && f.coords.length) {
       hayPoligonos = true;
-      L.polygon(f.coords, {color, fillColor: color, fillOpacity: 0.22, weight: 2.5})
-        .bindPopup(popup).addTo(capaFincas);
+      L.polygon(f.coords, {color:'#2d6a4f', fillColor:'#52b788', fillOpacity:0.35})
+        .bindPopup(`<b>${f.nombre}</b><br>${f.cultivo} · ${f.area} ha<br>📍 ${f.ubicacion}`)
+        .addTo(capaFincas);
     } else if (f.centro) {
-      const icon = L.divIcon({html:`<div style="background:${color};border:2px solid #fff;border-radius:50%;width:14px;height:14px;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`, iconSize:[14,14], className:''});
-      L.marker(f.centro, {icon}).bindPopup(popup).addTo(capaFincas);
+      L.marker(f.centro).bindPopup(`<b>${f.nombre}</b><br>${f.cultivo} · ${f.area} ha`).addTo(capaFincas);
     }
   });
   if (hayPoligonos || capaFincas.getLayers().length) {
@@ -466,50 +360,21 @@ async function ubicarEnMapa(query, zoom) {
   }
 }
 
-// ===== BÚSQUEDA EN MAPA (Nominatim geocoding) =====
-async function buscarEnMapa() {
-  const q = document.getElementById('map-search-input')?.value?.trim();
-  if (!q) return;
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ' Costa Rica')}&format=json&limit=1`);
-    const d = await r.json();
-    if (!d.length) return toast('No se encontró ese lugar. Intenta con otro nombre.', 'error');
-    const lat = parseFloat(d[0].lat), lon = parseFloat(d[0].lon);
-    if (!mapaGeneral) initMapaGeneral();
-    mapaGeneral.setView([lat, lon], 14);
-    L.popup().setLatLng([lat, lon]).setContent(`📍 ${d[0].display_name.split(',').slice(0,3).join(', ')}`).openOn(mapaGeneral);
-  } catch(e) { toast('Error al buscar. Verifica tu conexión.', 'error'); }
-}
 
-async function buscarEnMapaFinca() {
-  const q = document.getElementById('finca-map-search')?.value?.trim();
-  if (!q) return;
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ' Costa Rica')}&format=json&limit=1`);
-    const d = await r.json();
-    if (!d.length) return toast('No se encontró ese lugar.', 'error');
-    const lat = parseFloat(d[0].lat), lon = parseFloat(d[0].lon);
-    if (fincaMap) fincaMap.setView([lat, lon], 15);
-  } catch(e) { toast('Error al buscar.', 'error'); }
-}
-
-function centrarEnMiUbicacion() {
-  if (!navigator.geolocation) return toast('Geolocalización no disponible.', 'error');
-  navigator.geolocation.getCurrentPosition(pos => {
-    const { latitude: lat, longitude: lon } = pos.coords;
-    if (!mapaGeneral) initMapaGeneral();
-    mapaGeneral.setView([lat, lon], 15);
-    L.circle([lat, lon], {radius: 30, color:'#34c759', fillColor:'#34c759', fillOpacity:0.3}).addTo(mapaGeneral);
-  }, () => toast('No se pudo obtener tu ubicación.', 'error'));
-}
-
-function centrarFincaEnUbicacion() {
-  if (!navigator.geolocation) return toast('Geolocalización no disponible.', 'error');
-  navigator.geolocation.getCurrentPosition(pos => {
-    const { latitude: lat, longitude: lon } = pos.coords;
-    if (fincaMap) {
-      fincaMap.setView([lat, lon], 16);
-      L.circle([lat, lon], {radius: 20, color:'#34c759', fillColor:'#34c759', fillOpacity:0.4}).addTo(fincaMap);
-    }
-  }, () => toast('No se pudo obtener tu ubicación.', 'error'));
+// ── Toggle mapa oscuro ↔ satélite ──────────────────────────────
+function toggleMapMode() {
+  if (!window.mapaGeneral) return;
+  if (window._mapMode === 'dark') {
+    window._mapMode = 'satellite';
+    window._cartoTile.remove();
+    window._satelliteTile.addTo(window.mapaGeneral);
+    const btn = document.getElementById('btn-toggle-map');
+    if (btn) { btn.textContent = '🗺️ Vista oscura'; btn.style.background = 'rgba(34,197,94,0.15)'; }
+  } else {
+    window._mapMode = 'dark';
+    window._satelliteTile.remove();
+    window._cartoTile.addTo(window.mapaGeneral);
+    const btn = document.getElementById('btn-toggle-map');
+    if (btn) { btn.textContent = '🛰️ Vista satélite'; btn.style.background = 'rgba(12,24,16,0.9)'; }
+  }
 }

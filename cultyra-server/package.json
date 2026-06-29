@@ -3,19 +3,10 @@
   "version": "2.0.0",
   "description": "Servidor de sincronización de datos de Cultyra (auth vía Firebase)",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
+  "scripts": { "start": "node server.js" },
   "dependencies": {
-    "compression": "^1.8.1",
-    "cors": "^2.8.5",
     "express": "^4.19.0",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^8.5.2",
-    "express-validator": "^7.3.2",
-    "helmet": "^8.2.0",
-    "hpp": "^0.2.3",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.11.0"
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2"
   }
 }
